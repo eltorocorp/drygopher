@@ -63,6 +63,7 @@ func aggregatePackageStats(packages []string) (testedPackages, untestedPackages 
 		if err != nil {
 			log.Println("Error issueing command to analyze package.")
 			log.Println(analyzeCmdText)
+			log.Println(err)
 			return
 		}
 		log.Printf("---> Package result: %v", string(result))
