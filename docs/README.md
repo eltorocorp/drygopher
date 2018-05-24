@@ -1,9 +1,9 @@
 # drygopher
 Keep your coverage high, and your gopher dry.
 
-*drygopher* is yet another coverage analysis tool for go packages.
+*drygopher* is yet another coverage analysis tool for go.
 
-Its purpose is to keep your gopher dry by ensuring that the code in your project is meeting the code coverage standards that you think it needs to.
+Its purpose is to keep your gopher dry by ensuring that that all of the code in your project is covered by tests, according to conventions you specify. 
 
 ## OK, how is this different?
 "How will this keep my gopher more dry than the other go coverage tools out there", you ask?
