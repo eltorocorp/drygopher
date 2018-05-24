@@ -5,7 +5,8 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/eltorocorp/drygopher/internal/runner"
+	"github.com/eltorocorp/drygopher/internal/coverage"
+	"github.com/eltorocorp/drygopher/internal/shelledcmd"
 	wordwrap "github.com/mitchellh/go-wordwrap"
 	"github.com/spf13/cobra"
 )
@@ -45,7 +46,8 @@ var rootCmd = &cobra.Command{
 		if useDefaultExclusions {
 			packageExclusions = append(packageExclusions, "/vendor/", "_test")
 		}
-		runner.AnalyzeUnitTestCoverage(exclusionPatterns, coverageStandard)
+		coverageAPI := coverage.New(new(shelledcmd.API))
+		coverageAPI.AnalyzeUnitTestCoverage(exclusionPatterns, coverageStandard)
 		return nil
 	},
 	PreRunE: func(cmd *cobra.Command, args []string) (err error) {

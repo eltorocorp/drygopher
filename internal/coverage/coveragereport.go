@@ -1,9 +1,8 @@
-package runner
+package coverage
 
 import (
 	"fmt"
 	"log"
-	"os/exec"
 	"strconv"
 
 	"github.com/eltorocorp/drygopher/internal/pckg"
@@ -11,7 +10,7 @@ import (
 	"gonum.org/v1/gonum/floats"
 )
 
-func outputCoverageReport(allPackages pckg.Group, exclusionPatterns []string) {
+func (a *API) outputCoverageReport(allPackages pckg.Group, exclusionPatterns []string) {
 	fmt.Println() // space
 	log.Println("Coverage Report")
 	log.Println("Packages Excluded From Coverage")
@@ -21,11 +20,7 @@ func outputCoverageReport(allPackages pckg.Group, exclusionPatterns []string) {
 		fmt.Println() // space
 		log.Println(exclusionPattern)
 		log.Println(pad.Right("", len(exclusionPattern), "-"))
-		cmd := exec.Command("sh", "-c", fmt.Sprintf("go list ./... | grep -v /vendor/ | grep %v", exclusionPattern))
-		err := cmd.Run()
-		if err != nil {
-			panic(err)
-		}
+		a.tooling.PrintExcludedPackages(exclusionPattern)
 	}
 
 	fmt.Println() // space
