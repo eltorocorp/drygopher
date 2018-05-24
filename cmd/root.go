@@ -3,9 +3,9 @@ package cmd
 import (
 	"errors"
 	"fmt"
-	"log"
 	"os"
 
+	"github.com/eltorocorp/drygopher/internal/runner"
 	wordwrap "github.com/mitchellh/go-wordwrap"
 	"github.com/spf13/cobra"
 )
@@ -41,7 +41,11 @@ var rootCmd = &cobra.Command{
 	Short: "Keep your coverage high, and your gopher dry.",
 	Long:  wordwrap.WrapString("\ndrygopher provides coverage analysis for go projects. It keeps your gopher dry by making sure everything is covered as it should be. Visit http://github.com/eltorocorp/drygopher for more information.", 80),
 	RunE: func(cmd *cobra.Command, args []string) (err error) {
-		log.Println("Woot!")
+		packageExclusions := exclusionPatterns
+		if useDefaultExclusions {
+			packageExclusions = append(packageExclusions, "/vendor/", "_test")
+		}
+		runner.AnalyzeUnitTestCoverage(exclusionPatterns, coverageStandard)
 		return nil
 	},
 	PreRunE: func(cmd *cobra.Command, args []string) (err error) {
