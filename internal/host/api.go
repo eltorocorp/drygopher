@@ -1,14 +1,18 @@
-package shelledcmd
+package host
 
 import (
+	"errors"
 	"fmt"
 	"io/ioutil"
 	"log"
+	"os"
 	"os/exec"
+	"path/filepath"
+	"sort"
 	"strings"
 )
 
-// API contains methods that send commands to the shell.
+// API contains methods that interact directly with the host environment.
 type API struct{}
 
 // GetRawCoverageAnalysisForPackage shells out a go test command and returns the
@@ -36,6 +40,7 @@ func (a *API) GetRawCoverageAnalysisForPackage(pkg string) ([]string, error) {
 		return nil, err
 	}
 	rawPkgCoverageData := strings.Split(string(tmpOut), "\n")
+	rawPkgCoverageData = rawPkgCoverageData[1:]
 	return rawPkgCoverageData, nil
 }
 
@@ -67,4 +72,38 @@ func (a *API) PrintExcludedPackages(exclusionPattern string) {
 	if err != nil {
 		panic(err)
 	}
+}
+
+// GetFileNamesForPackage returns a list package URIs with associated filenames.
+func (a *API) GetFileNamesForPackage(pkg string) ([]string, error) {
+	var gopath string
+	var set bool
+	if gopath, set = os.LookupEnv("GOPATH"); !set {
+		return nil, errors.New("GOPATH not set")
+	}
+	packagePath := gopath + "/src/" + pkg
+	files, err := ioutil.ReadDir(packagePath)
+	if err != nil {
+		return nil, err
+	}
+	fileNames := []string{}
+	for _, file := range files {
+		if filepath.Ext(file.Name()) == ".go" {
+			fullName := pkg + "/" + file.Name()
+			fileNames = append(fileNames, fullName)
+		}
+	}
+	return fileNames, nil
+}
+
+// SaveCoverageProfile saves the supplied raw data to the desired file.
+func (a *API) SaveCoverageProfile(fileName string, rawData []string) error {
+	for i, r := range rawData {
+		if strings.TrimSpace(r) == "" {
+			rawData = append(rawData[:i], rawData[i+1:]...)
+		}
+	}
+	sort.StringSlice(rawData).Sort()
+	profile := "mode: count\n" + strings.Join(rawData, "\n")
+	return ioutil.WriteFile(fileName, []byte(profile), os.ModePerm)
 }

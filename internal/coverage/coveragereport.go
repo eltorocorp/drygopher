@@ -20,7 +20,7 @@ func (a *API) outputCoverageReport(allPackages pckg.Group, exclusionPatterns []s
 		fmt.Println() // space
 		log.Println(exclusionPattern)
 		log.Println(pad.Right("", len(exclusionPattern), "-"))
-		a.tooling.PrintExcludedPackages(exclusionPattern)
+		a.host.PrintExcludedPackages(exclusionPattern)
 	}
 
 	fmt.Println() // space

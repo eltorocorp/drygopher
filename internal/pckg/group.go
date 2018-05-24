@@ -10,9 +10,9 @@ import (
 // Group is a slice of package stats.
 type Group []*Stats
 
-// SetEstimatedStmtCntFrom sets the estimated statement count based on the
+// SetEstimatedStmtCountFrom sets the estimated statement count based on the
 // average number of statements in other packages in the group.
-func (g *Group) SetEstimatedStmtCntFrom(reference Group) {
+func (g *Group) SetEstimatedStmtCountFrom(reference Group) {
 	for _, p := range *g {
 		p.Statements = reference.MedianStatementCount()
 	}

@@ -12,18 +12,18 @@ import (
 
 // API contains methods for analyzing unit test coverage.
 type API struct {
-	tooling interfaces.CoverageToolingAPI
+	host interfaces.HostAPI
 }
 
 // New returns a reference to a new coverage API.
-func New(tooling interfaces.CoverageToolingAPI) *API {
+func New(hostAPI interfaces.HostAPI) *API {
 	return &API{
-		tooling: tooling,
+		host: hostAPI,
 	}
 }
 
 // AnalyzeUnitTestCoverage analyzes unit test coverage across all packages.
-func (a *API) AnalyzeUnitTestCoverage(exclusionPatterns []string, coverageStandard float64) (err error) {
+func (a *API) AnalyzeUnitTestCoverage(exclusionPatterns []string, coverageStandard float64, suppressProfile bool, coverageProfileName string) (err error) {
 	log.Println("Analyzing unit test coverage...")
 	var (
 		packages             []string
@@ -31,7 +31,7 @@ func (a *API) AnalyzeUnitTestCoverage(exclusionPatterns []string, coverageStanda
 		untestedPackageStats pckg.Group
 	)
 
-	packages, err = a.tooling.GetPackages(exclusionPatterns)
+	packages, err = a.host.GetPackages(exclusionPatterns)
 	if err != nil {
 		return
 	}
@@ -41,16 +41,38 @@ func (a *API) AnalyzeUnitTestCoverage(exclusionPatterns []string, coverageStanda
 		return
 	}
 
-	untestedPackageStats.SetEstimatedStmtCntFrom(testedPackageStats)
+	untestedPackageStats.SetEstimatedStmtCountFrom(testedPackageStats)
 	allPackages := append(testedPackageStats, untestedPackageStats...)
 	actualCoveragePercentage := allPackages.CoveragePercent()
 
 	a.outputCoverageReport(allPackages, exclusionPatterns)
 
+	if !suppressProfile {
+		err = a.buildAndSaveCoverageProfile(allPackages, coverageProfileName)
+	}
+
 	if actualCoveragePercentage < coverageStandard {
 		return fmt.Errorf("coverage of %v%% is below the standard of %v%%", actualCoveragePercentage, coverageStandard)
 	}
-	return nil
+	return
+}
+
+func (a *API) buildAndSaveCoverageProfile(allPackages pckg.Group, coverageProfileName string) error {
+	profileData := []string{}
+	for _, pkg := range allPackages {
+		if pkg.Estimated {
+			fileNames, err := a.host.GetFileNamesForPackage(pkg.Package)
+			if err != nil {
+				return err
+			}
+			for _, fileName := range fileNames {
+				fileProfileInfo := fileName + ":0.0,0.0 0 0"
+				pkg.RawCoverageData = append(pkg.RawCoverageData, fileProfileInfo)
+			}
+		}
+		profileData = append(profileData, pkg.RawCoverageData...)
+	}
+	return a.host.SaveCoverageProfile(coverageProfileName, profileData)
 }
 
 func (a *API) getCoverageStatistics(packages []string) (testedPackageStats, untestedPackageStats pckg.Group, err error) {
@@ -62,7 +84,7 @@ func (a *API) getCoverageStatistics(packages []string) (testedPackageStats, unte
 		}
 
 		var rawPkgCoverageData []string
-		rawPkgCoverageData, err = a.tooling.GetRawCoverageAnalysisForPackage(pkg)
+		rawPkgCoverageData, err = a.host.GetRawCoverageAnalysisForPackage(pkg)
 		if err != nil {
 			return
 		}
@@ -103,11 +125,12 @@ func (a *API) aggregateRawPackageAnalysisData(pkg string, rawPkgCoverageData []s
 		totalCoveredCount += covered
 	}
 	return &pckg.Stats{
-		Covered:    totalCoveredCount,
-		Estimated:  false,
-		Package:    pkg,
-		Statements: totalStatementCount,
-		Uncovered:  totalStatementCount - totalCoveredCount,
+		Covered:         totalCoveredCount,
+		Estimated:       false,
+		Package:         pkg,
+		Statements:      totalStatementCount,
+		Uncovered:       totalStatementCount - totalCoveredCount,
+		RawCoverageData: rawPkgCoverageData,
 	}
 }
 
