@@ -1,5 +1,5 @@
 # drygopher
-Keep your gopher dry.
+Keep your coverage high, and your gopher dry.
 
 *drygopher* is yet another coverage analysis tool for go packages.
 
