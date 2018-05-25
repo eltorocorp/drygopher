@@ -2,10 +2,13 @@ package cmd
 
 import (
 	"errors"
-	"fmt"
 	"os"
 
 	"github.com/eltorocorp/drygopher/internal/coverage"
+	"github.com/eltorocorp/drygopher/internal/coverage/analysis"
+	"github.com/eltorocorp/drygopher/internal/coverage/packages"
+	"github.com/eltorocorp/drygopher/internal/coverage/profile"
+	"github.com/eltorocorp/drygopher/internal/coverage/report"
 	"github.com/eltorocorp/drygopher/internal/host"
 	wordwrap "github.com/mitchellh/go-wordwrap"
 	"github.com/spf13/cobra"
@@ -46,9 +49,16 @@ var rootCmd = &cobra.Command{
 		if useDefaultExclusions {
 			packageExclusions = append(packageExclusions, "/vendor/", "_test")
 		}
-		coverageAPI := coverage.New(new(host.API))
-		coverageAPI.AnalyzeUnitTestCoverage(exclusionPatterns, coverageStandard, suppressProfile, profileName)
-		return nil
+
+		execAPI := new(host.Exec)
+		osioAPI := new(host.OSIO)
+		packageAPI := packages.New(execAPI, osioAPI)
+		profileAPI := profile.New(packageAPI, osioAPI)
+		reportAPI := report.New(execAPI)
+		analysisAPI := analysis.New(osioAPI)
+		coverageAPI := coverage.New(packageAPI, analysisAPI, profileAPI, reportAPI)
+
+		return coverageAPI.AnalyzeUnitTestCoverage(exclusionPatterns, coverageStandard, suppressProfile, profileName)
 	},
 	PreRunE: func(cmd *cobra.Command, args []string) (err error) {
 		if coverageStandard < 0 {
@@ -64,7 +74,6 @@ var rootCmd = &cobra.Command{
 // Execute runs the root command.
 func Execute() {
 	if err := rootCmd.Execute(); err != nil {
-		fmt.Println(err)
 		os.Exit(1)
 	}
 }
@@ -73,10 +82,12 @@ func init() {
 	wrap := func(s string) string {
 		return wordwrap.WrapString(s, 50)
 	}
-	rootCmd.DisableFlagsInUseLine = true
 	rootCmd.Flags().Float64VarP(&coverageStandard, "standard", "s", 100, wrap("Coverage standard to use."))
 	rootCmd.Flags().StringVarP(&profileName, "profilename", "p", "coverage.out", wrap("The name of the coverage profile file. This flag has no effect if the suppressprofile flag is also set."))
 	rootCmd.Flags().BoolVar(&suppressProfile, "suppressprofile", false, wrap("Supply this flag to suppress creating the coverage profile file."))
 	rootCmd.Flags().StringSliceVarP(&exclusionPatterns, "exclusions", "e", []string{}, wrap("A set of regular expressions used to define packages to exclude from coverage analysis. This flag can be combined with the defaultexclusions flag."))
 	rootCmd.Flags().BoolVarP(&useDefaultExclusions, "defaultexclusions", "d", false, wrap("Exclude vendor and _test packages from coverage analysis. This flag can be combined with the exclusions flag."))
+
+	rootCmd.DisableFlagsInUseLine = true
+	rootCmd.SilenceUsage = true
 }

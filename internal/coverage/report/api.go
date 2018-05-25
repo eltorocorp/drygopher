@@ -1,16 +1,30 @@
-package coverage
+package report
 
 import (
 	"fmt"
 	"log"
 	"strconv"
 
+	"github.com/eltorocorp/drygopher/internal/hostiface"
 	"github.com/eltorocorp/drygopher/internal/pckg"
 	"github.com/willf/pad"
 	"gonum.org/v1/gonum/floats"
 )
 
-func (a *API) outputCoverageReport(allPackages pckg.Group, exclusionPatterns []string) {
+// API contains methods generating and printing a coverage report.
+type API struct {
+	execAPI hostiface.ExecAPI
+}
+
+// New returns a reference to a profile api.
+func New(execAPI hostiface.ExecAPI) *API {
+	return &API{
+		execAPI: execAPI,
+	}
+}
+
+// OutputCoverageReport generates and outputs a coverage report.
+func (a *API) OutputCoverageReport(allPackages pckg.Group, exclusionPatterns []string) {
 	fmt.Println() // space
 	log.Println("Coverage Report")
 	log.Println("Packages Excluded From Coverage")
@@ -20,7 +34,7 @@ func (a *API) outputCoverageReport(allPackages pckg.Group, exclusionPatterns []s
 		fmt.Println() // space
 		log.Println(exclusionPattern)
 		log.Println(pad.Right("", len(exclusionPattern), "-"))
-		a.host.PrintExcludedPackages(exclusionPattern)
+		a.PrintExcludedPackages(exclusionPattern)
 	}
 
 	fmt.Println() // space
@@ -52,6 +66,16 @@ func (a *API) outputCoverageReport(allPackages pckg.Group, exclusionPatterns []s
 		ftoa(allPackages.CoveragePercent()*100)+"%",
 		allPackages.EstimateCount(),
 	)
+}
+
+// PrintExcludedPackages shells out a go list command and sends the results
+// of the command directly to stdout.
+func (a *API) PrintExcludedPackages(exclusionPattern string) {
+	cmd := a.execAPI.Command("sh", "-c", fmt.Sprintf("go list ./... | grep -v /vendor/ | grep %v", exclusionPattern))
+	err := cmd.Run()
+	if err != nil {
+		panic(err)
+	}
 }
 
 func ftoa(f float64) string {
