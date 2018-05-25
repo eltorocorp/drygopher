@@ -40,26 +40,3 @@ func (_m *AnalysisAPI) GetCoverageStatistics(packages []string) (pckg.Group, pck
 
 	return r0, r1, r2
 }
-
-// GetRawCoverageAnalysisForPackage provides a mock function with given fields: pkg
-func (_m *AnalysisAPI) GetRawCoverageAnalysisForPackage(pkg string) ([]string, error) {
-	ret := _m.Called(pkg)
-
-	var r0 []string
-	if rf, ok := ret.Get(0).(func(string) []string); ok {
-		r0 = rf(pkg)
-	} else {
-		if ret.Get(0) != nil {
-			r0 = ret.Get(0).([]string)
-		}
-	}
-
-	var r1 error
-	if rf, ok := ret.Get(1).(func(string) error); ok {
-		r1 = rf(pkg)
-	} else {
-		r1 = ret.Error(1)
-	}
-
-	return r0, r1
-}

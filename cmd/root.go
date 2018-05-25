@@ -6,6 +6,7 @@ import (
 
 	"github.com/eltorocorp/drygopher/internal/coverage"
 	"github.com/eltorocorp/drygopher/internal/coverage/analysis"
+	"github.com/eltorocorp/drygopher/internal/coverage/analysis/raw"
 	"github.com/eltorocorp/drygopher/internal/coverage/packages"
 	"github.com/eltorocorp/drygopher/internal/coverage/profile"
 	"github.com/eltorocorp/drygopher/internal/coverage/report"
@@ -55,7 +56,8 @@ var rootCmd = &cobra.Command{
 		packageAPI := packages.New(execAPI, osioAPI)
 		profileAPI := profile.New(packageAPI, osioAPI)
 		reportAPI := report.New(execAPI)
-		analysisAPI := analysis.New(osioAPI, execAPI)
+		rawAPI := raw.New(osioAPI, execAPI)
+		analysisAPI := analysis.New(rawAPI)
 		coverageAPI := coverage.New(packageAPI, analysisAPI, profileAPI, reportAPI)
 
 		return coverageAPI.AnalyzeUnitTestCoverage(exclusionPatterns, coverageStandard, suppressProfile, profileName)
