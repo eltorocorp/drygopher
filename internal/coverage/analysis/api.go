@@ -2,6 +2,7 @@ package analysis
 
 import (
 	"log"
+	"strings"
 
 	"github.com/eltorocorp/drygopher/internal/coverage/analysis/interfaces"
 	"github.com/eltorocorp/drygopher/internal/pckg"
@@ -24,7 +25,7 @@ func (a *API) GetCoverageStatistics(packages []string) (testedPackageStats, unte
 	log.Println("Aggregating packages stats...")
 
 	for _, pkg := range packages {
-		if pkg == "" {
+		if len(strings.TrimSpace(pkg)) == 0 {
 			continue
 		}
 

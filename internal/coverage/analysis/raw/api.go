@@ -1,6 +1,7 @@
 package raw
 
 import (
+	"errors"
 	"fmt"
 	"log"
 	"strconv"
@@ -49,6 +50,9 @@ func (a *API) GetRawCoverageAnalysisForPackage(pkg string) ([]string, error) {
 		return nil, err
 	}
 	rawPkgCoverageData := strings.Split(string(tmpOut), "\n")
+	if !strings.Contains(rawPkgCoverageData[0], "mode:") {
+		return nil, errors.New("coverage profile file malformed; missing 'mode:' in header")
+	}
 	rawPkgCoverageData = rawPkgCoverageData[1:]
 	return rawPkgCoverageData, nil
 }
