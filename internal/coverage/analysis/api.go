@@ -76,33 +76,48 @@ func (a *API) GetCoverageStatistics(packages []string) (testedPackageStats, unte
 			continue
 		}
 
-		packageStats := a.aggregateRawPackageAnalysisData(pkg, rawPkgCoverageData)
+		var packageStats *pckg.Stats
+		packageStats, err = a.aggregateRawPackageAnalysisData(pkg, rawPkgCoverageData)
+		if err != nil {
+			return
+		}
 		testedPackageStats = append(testedPackageStats, packageStats)
-
 	}
 	return
 }
 
-func (a *API) aggregateRawPackageAnalysisData(pkg string, rawPkgCoverageData []string) *pckg.Stats {
+func (a *API) aggregateRawPackageAnalysisData(pkg string, rawPkgCoverageData []string) (*pckg.Stats, error) {
 	totalStatementCount := 0.0
 	totalCoveredCount := 0.0
-	firstLine := true
-	for _, coverageReportItem := range rawPkgCoverageData {
-		if firstLine {
-			firstLine = false
+	for line, coverageReportItem := range rawPkgCoverageData {
+		if line == 0 || coverageReportItem == "" {
 			continue
 		}
-		if coverageReportItem == "" {
-			continue
+
+		statementCount, err := a.parseStatementCountFromRaw(coverageReportItem)
+		if err != nil {
+			return nil, err
 		}
-		statementCount := a.parseStatementCountFromRaw(coverageReportItem)
+
 		totalStatementCount += statementCount
+		callCount, err := a.parseCallCountFromRaw(coverageReportItem)
+		if err != nil {
+			return nil, err
+		}
+
+		// If a set of statements has at least one call, we set the number of covered
+		// statements equal to the number of statements (rather than the number
+		// of calls). This prevents coverage from going above 100% in cases
+		// where a set of statements are called multiple times through the course
+		// of running tests.
 		covered := 0.0
-		if a.parseCallCountFromRaw(coverageReportItem) > 0 {
+		if callCount > 0 {
 			covered = statementCount
 		}
+
 		totalCoveredCount += covered
 	}
+
 	return &pckg.Stats{
 		Covered:         totalCoveredCount,
 		Estimated:       false,
@@ -110,23 +125,13 @@ func (a *API) aggregateRawPackageAnalysisData(pkg string, rawPkgCoverageData []s
 		Statements:      totalStatementCount,
 		Uncovered:       totalStatementCount - totalCoveredCount,
 		RawCoverageData: rawPkgCoverageData,
-	}
+	}, nil
 }
 
-func (a *API) parseStatementCountFromRaw(rawDatum string) float64 {
-	result, err := strconv.ParseFloat(strings.Split(rawDatum, " ")[1], 64)
-	if err != nil {
-		log.Println(err)
-		panic("Error parsing raw data for statement count.")
-	}
-	return result
+func (a *API) parseStatementCountFromRaw(rawDatum string) (float64, error) {
+	return strconv.ParseFloat(strings.Split(rawDatum, " ")[1], 64)
 }
 
-func (a *API) parseCallCountFromRaw(rawDatum string) float64 {
-	result, err := strconv.ParseFloat(strings.Split(rawDatum, " ")[2], 64)
-	if err != nil {
-		log.Println(err)
-		panic("Error parsing raw data for call count.")
-	}
-	return result
+func (a *API) parseCallCountFromRaw(rawDatum string) (float64, error) {
+	return strconv.ParseFloat(strings.Split(rawDatum, " ")[2], 64)
 }
