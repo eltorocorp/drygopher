@@ -2,3 +2,4 @@
 vendor/
 Gopkg.lock
 *.out
+*.test

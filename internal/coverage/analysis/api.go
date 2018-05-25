@@ -3,7 +3,6 @@ package analysis
 import (
 	"fmt"
 	"log"
-	"os/exec"
 	"strconv"
 	"strings"
 
@@ -14,12 +13,14 @@ import (
 // API contains methods gathering coverage statistics.
 type API struct {
 	osioAPI hostiface.OSIOAPI
+	execAPI hostiface.ExecAPI
 }
 
 // New returns a reference to an API
-func New(osioAPI hostiface.OSIOAPI) *API {
+func New(osioAPI hostiface.OSIOAPI, execAPI hostiface.ExecAPI) *API {
 	return &API{
 		osioAPI: osioAPI,
+		execAPI: execAPI,
 	}
 }
 
@@ -29,7 +30,7 @@ func (a *API) GetRawCoverageAnalysisForPackage(pkg string) ([]string, error) {
 	covermode := "count"
 	analyzeCmdText := "go test -covermode=%v -coverprofile=tmp.out %v"
 	analyzeCmdText = fmt.Sprintf(analyzeCmdText, covermode, pkg)
-	analyzeCoverageCmd := exec.Command("sh", "-c", analyzeCmdText)
+	analyzeCoverageCmd := a.execAPI.Command("sh", "-c", analyzeCmdText)
 	var result []byte
 	result, err := analyzeCoverageCmd.Output()
 	if err != nil {

@@ -55,7 +55,7 @@ var rootCmd = &cobra.Command{
 		packageAPI := packages.New(execAPI, osioAPI)
 		profileAPI := profile.New(packageAPI, osioAPI)
 		reportAPI := report.New(execAPI)
-		analysisAPI := analysis.New(osioAPI)
+		analysisAPI := analysis.New(osioAPI, execAPI)
 		coverageAPI := coverage.New(packageAPI, analysisAPI, profileAPI, reportAPI)
 
 		return coverageAPI.AnalyzeUnitTestCoverage(exclusionPatterns, coverageStandard, suppressProfile, profileName)
