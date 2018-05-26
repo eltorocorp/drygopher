@@ -3,8 +3,8 @@
 all: install test
 
 install:
-	@echo Updating dependencies...
-	@dep ensure
+	# @echo Updating dependencies...
+	# @dep ensure
 	@cd drygopher && go install 
 .PHONY: install
 
