@@ -2,8 +2,8 @@ package report
 
 import (
 	"fmt"
-	"log"
 	"strconv"
+	"strings"
 
 	"github.com/eltorocorp/drygopher/drygopher/coverage/hostiface"
 	"github.com/eltorocorp/drygopher/drygopher/coverage/pckg"
@@ -23,31 +23,36 @@ func New(execAPI hostiface.ExecAPI) *API {
 	}
 }
 
-// OutputCoverageReport generates and outputs a coverage report.
-func (a *API) OutputCoverageReport(allPackages pckg.Group, exclusionPatterns []string) {
-	fmt.Println() // space
-	log.Println("Coverage Report")
-	log.Println("Packages Excluded From Coverage")
-	log.Println("===============================")
+var sb = new(strings.Builder)
+var pl = func(a ...interface{}) { sb.WriteString(fmt.Sprintln(a...)) }
+var pf = func(format string, v ...interface{}) { sb.WriteString(fmt.Sprintf(format, v...)) }
+
+// BuildCoverageReport generates coverage report.
+func (a *API) BuildCoverageReport(allPackages pckg.Group, exclusionPatterns []string) (string, error) {
+
+	pl()
+	pl("Coverage Report")
+	pl("Packages Excluded From Coverage")
+	pl("===============================")
 
 	for _, exclusionPattern := range exclusionPatterns {
-		fmt.Println() // space
-		log.Println(exclusionPattern)
-		log.Println(pad.Right("", len(exclusionPattern), "-"))
-		a.PrintExcludedPackages(exclusionPattern)
+		pl() // space
+		pl(exclusionPattern)
+		pl(pad.Right("", len(exclusionPattern), "-"))
+		a.printExcludedPackages(exclusionPattern)
 	}
 
-	fmt.Println() // space
-	log.Println("Analyzed Packages")
-	log.Println("-----------------")
+	pl()
+	pl("Analyzed Packages")
+	pl("-----------------")
 	longestName := 0
 	for _, p := range allPackages {
 		if len(p.Package) > longestName {
 			longestName = len(p.Package)
 		}
 	}
-	format := "\t%v\t%v\t%v\t%v\t%v\t%v\n"
-	log.Printf(format, pad.Right("package", longestName, " "), "stmts", "cvrd", "!cvrd", "cvrg", "est")
+	format := "%v\t%v\t%v\t%v\t%v\t%v\n"
+	pf(format, pad.Right("package", longestName, " "), "stmts", "cvrd", "!cvrd", "cvrg", "est")
 	for _, p := range allPackages {
 		packageName := pad.Right(p.Package, longestName, " ")
 		pct := ftoa(p.CoveragePercent()*100) + "%"
@@ -55,10 +60,10 @@ func (a *API) OutputCoverageReport(allPackages pckg.Group, exclusionPatterns []s
 		if p.Estimated {
 			est = "yes"
 		}
-		log.Printf(format, packageName, p.Statements, p.Covered, p.Uncovered, pct, est)
+		pf(format, packageName, p.Statements, p.Covered, p.Uncovered, pct, est)
 	}
 
-	log.Printf(format,
+	pf(format,
 		pad.Right("", longestName, " "),
 		allPackages.TotalStatementCount(),
 		allPackages.TotalCovered(),
@@ -66,12 +71,11 @@ func (a *API) OutputCoverageReport(allPackages pckg.Group, exclusionPatterns []s
 		ftoa(allPackages.CoveragePercent()*100)+"%",
 		allPackages.EstimateCount(),
 	)
+	return sb.String(), nil
 }
 
-// PrintExcludedPackages shells out a go list command and sends the results
-// of the command directly to stdout.
-func (a *API) PrintExcludedPackages(exclusionPattern string) {
-	cmd := a.execAPI.Command("sh", "-c", fmt.Sprintf("go list ./... | grep -v /vendor/ | grep %v", exclusionPattern))
+func (a *API) printExcludedPackages(exclusionPattern string) {
+	cmd := a.execAPI.Command("sh", "-c", fmt.Sprintf("go list ./... | grep %v", exclusionPattern))
 	err := cmd.Run()
 	if err != nil {
 		panic(err)

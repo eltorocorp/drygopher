@@ -9,12 +9,23 @@ type ReportAPI struct {
 	mock.Mock
 }
 
-// OutputCoverageReport provides a mock function with given fields: allPackages, exclusionPatterns
-func (_m *ReportAPI) OutputCoverageReport(allPackages pckg.Group, exclusionPatterns []string) {
-	_m.Called(allPackages, exclusionPatterns)
-}
+// BuildCoverageReport provides a mock function with given fields: allPackages, exclusionPatterns
+func (_m *ReportAPI) BuildCoverageReport(allPackages pckg.Group, exclusionPatterns []string) (string, error) {
+	ret := _m.Called(allPackages, exclusionPatterns)
 
-// PrintExcludedPackages provides a mock function with given fields: exclusionPattern
-func (_m *ReportAPI) PrintExcludedPackages(exclusionPattern string) {
-	_m.Called(exclusionPattern)
+	var r0 string
+	if rf, ok := ret.Get(0).(func(pckg.Group, []string) string); ok {
+		r0 = rf(allPackages, exclusionPatterns)
+	} else {
+		r0 = ret.Get(0).(string)
+	}
+
+	var r1 error
+	if rf, ok := ret.Get(1).(func(pckg.Group, []string) error); ok {
+		r1 = rf(allPackages, exclusionPatterns)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
 }

@@ -23,7 +23,7 @@ func Test_AnalyzeUnitTestCoverage_Normally_ReturnsWithoutError(t *testing.T) {
 	profileAPI.On("BuildAndSaveCoverageProfile", mock.Anything, mock.Anything).Return(nil)
 
 	reportAPI := new(mocks.ReportAPI)
-	reportAPI.On("OutputCoverageReport", mock.Anything, mock.Anything).Return(nil)
+	reportAPI.On("BuildCoverageReport", mock.Anything, mock.Anything).Return("", nil)
 
 	coverageAPI := coverage.New(packageAPI, analysisAPI, profileAPI, reportAPI)
 
@@ -77,7 +77,7 @@ func Test_AnalyzeTestCoverage_CoverageBelowStandard_ReturnsCoverageError(t *test
 	profileAPI.On("BuildAndSaveCoverageProfile", mock.Anything, mock.Anything).Return(nil)
 
 	reportAPI := new(mocks.ReportAPI)
-	reportAPI.On("OutputCoverageReport", mock.Anything, mock.Anything).Return(nil)
+	reportAPI.On("BuildCoverageReport", mock.Anything, mock.Anything).Return("", nil)
 
 	coverageAPI := coverage.New(packageAPI, analysisAPI, profileAPI, reportAPI)
 

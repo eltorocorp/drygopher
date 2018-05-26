@@ -1,6 +1,7 @@
 package coverage
 
 import (
+	"fmt"
 	"log"
 
 	"github.com/eltorocorp/drygopher/drygopher/coverage/coverageerror"
@@ -49,7 +50,12 @@ func (a *API) AnalyzeUnitTestCoverage(exclusionPatterns []string, coverageStanda
 	allPackages := append(testedPackageStats, untestedPackageStats...)
 	actualCoveragePercentage := allPackages.CoveragePercent()
 
-	a.report.OutputCoverageReport(allPackages, exclusionPatterns)
+	var report string
+	report, err = a.report.BuildCoverageReport(allPackages, exclusionPatterns)
+	if err != nil {
+		return
+	}
+	fmt.Println(report)
 
 	if !suppressProfile {
 		err = a.profile.BuildAndSaveCoverageProfile(allPackages, coverageProfileName)
