@@ -24,7 +24,7 @@ var (
 )
 
 const examples = `
-Run the command bare with no flags or arguments. In this case, it will analyize coverage of all packages below the current directory.
+Analyze coverage of all packages below the current directory, expecting 100% coverage, and require that all packages participate in coverage analysis (regardless of if they have/need tests). No gopher needs to be this dry. 
 
   $ drygopher
 
@@ -32,13 +32,30 @@ Lower the coverage standard to 98.2% and change the name of the coverage profile
 
   $ drygopher -s 98.2 -p coveragedata.txt
 
-Suppress creating the coverage profile file, and manually exclude vendored packages from coverage analysis.
+Run coverage analysis, excluding vendor and test packages, and suppress the generation of a coverage profile.
 
-  $ drygopher --suppressprofile -e '/vendor/' '_test'
+  $ drygopher -d --suppressprofile
 
-Run coverage analysis excluding vendor and test packages, and also exclude any packages whose name ends with "service".
+Run coverage analysis, excluding vendor and test packages, and also exclude any packages whose name ends with "service". Note that in this case, we enclose the expression in single quotes to prevent globbing.
 
-  $drygopher -d -e service$
+  $drygopher -d -e 'service$'
+
+Run coverage analysis, excluding vendor and test packages, and packages that end in cmd, or iface, or contain mock anywhere in the name.
+The following commands are all equivalent:
+
+  Using defaults plus a comma separated list of expressions:
+  $drygopher -d -e "'cmd$','iface$',mock"
+
+  Using defaults and explicit expressions:
+  $drygopher -d -e 'cmd$' -e 'iface$' -e mock
+
+  Using groups of explicit expressions:
+  $drygopher -e "/vendor/,_test" -e "'cmd$','iface$'" -e mock
+
+  Using defaults and a single experssion:
+  $drygopher -d -e "'cmd$|iface$|mock'"
+
+Note that when supplying a list of expressions for -e, the list must be comma delimited. As such, literal commas cannot be used when supplying a list of expressions for the -e flag. Generally, this shouldn't be an issue since commas are not typically valid in package names.
 `
 
 var rootCmd = &cobra.Command{

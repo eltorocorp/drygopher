@@ -8,5 +8,5 @@ install:
 
 test:
 	@cd internal && mockery -all
-	@drygopher -d
-.PHONY: test
+	@drygopher -d -e "/mocks,/interfaces,/cmd,/host,'iface$$','drygopher$$'"
+.PHONY: tes

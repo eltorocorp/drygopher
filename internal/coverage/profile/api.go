@@ -45,12 +45,7 @@ func (a *API) BuildAndSaveCoverageProfile(allPackages pckg.Group, coverageProfil
 
 // SaveCoverageProfile saves the supplied raw data to the desired file.
 func (a *API) SaveCoverageProfile(fileName string, rawData []string) error {
-	for i, r := range rawData {
-		if strings.TrimSpace(r) == "" {
-			rawData = append(rawData[:i], rawData[i+1:]...)
-		}
-	}
 	sort.StringSlice(rawData).Sort()
-	profile := "mode: count\n" + strings.Join(rawData, "\n")
+	profile := "mode: count\n" + strings.TrimSpace(strings.Join(rawData, "\n"))
 	return a.osioAPI.WriteFile(fileName, []byte(profile), os.ModePerm)
 }

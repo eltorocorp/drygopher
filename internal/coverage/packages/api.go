@@ -30,7 +30,7 @@ func (a *API) GetPackages(exclusionPatterns []string) (packages []string, err er
 	var (
 		out []byte
 	)
-	grepString := "go list ./... | grep -v /vendor/ "
+	grepString := "go list ./..."
 	for _, exclusionPattern := range exclusionPatterns {
 		grepString += fmt.Sprintf(" | grep -v %v", exclusionPattern)
 	}
