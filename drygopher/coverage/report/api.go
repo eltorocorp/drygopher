@@ -39,7 +39,10 @@ func (a *API) BuildCoverageReport(allPackages pckg.Group, exclusionPatterns []st
 		pl() // space
 		pl(exclusionPattern)
 		pl(pad.Right("", len(exclusionPattern), "-"))
-		a.printExcludedPackages(exclusionPattern)
+		err := a.printExcludedPackages(exclusionPattern)
+		if err != nil {
+			return "", err
+		}
 	}
 
 	pl()
@@ -74,12 +77,9 @@ func (a *API) BuildCoverageReport(allPackages pckg.Group, exclusionPatterns []st
 	return sb.String(), nil
 }
 
-func (a *API) printExcludedPackages(exclusionPattern string) {
+func (a *API) printExcludedPackages(exclusionPattern string) error {
 	cmd := a.execAPI.Command("sh", "-c", fmt.Sprintf("go list ./... | grep %v", exclusionPattern))
-	err := cmd.Run()
-	if err != nil {
-		panic(err)
-	}
+	return cmd.Run()
 }
 
 func ftoa(f float64) string {

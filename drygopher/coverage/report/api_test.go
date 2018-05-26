@@ -1,6 +1,7 @@
 package report_test
 
 import (
+	"errors"
 	"testing"
 
 	"github.com/eltorocorp/drygopher/drygopher/coverage/pckg"
@@ -21,6 +22,10 @@ func Test_BuildCoverageReport_Normally_BuildsAReport(t *testing.T) {
 		&pckg.Stats{
 			Package: "somepackage",
 		},
+		&pckg.Stats{
+			Package:   "estimatedpkg",
+			Estimated: true,
+		},
 	}
 	exclusions := []string{
 		"excludedpackage",
@@ -37,10 +42,28 @@ excludedpackage
 
 Analyzed Packages
 -----------------
-package    	stmts	cvrd	!cvrd	cvrg	est
-somepackage	0	0	0	0.0%	no
-           	0	0	0	0.0%	0
+package     	stmts	cvrd	!cvrd	cvrg	est
+somepackage 	0	0	0	0.0%	no
+estimatedpkg	0	0	0	0.0%	yes
+            	0	0	0	0.0%	1
 `
+
 	assert.Equal(t, expectedReport, report)
 	assert.NoError(t, err)
+}
+
+func Test_BuildCoverageReport_ErrorPrintingExludedPackages_ReturnsError(t *testing.T) {
+	execAPI := new(mocks.ExecAPI)
+	commandAPI := new(mocks.CommandAPI)
+	commandAPI.On("Run").Return(errors.New("test error"))
+	execAPI.On("Command", mock.Anything, mock.Anything, mock.Anything).Return(commandAPI)
+
+	reportAPI := report.New(execAPI)
+	exclusions := []string{
+		"excludedpackage",
+	}
+	report, err := reportAPI.BuildCoverageReport(pckg.Group{}, exclusions)
+
+	assert.Zero(t, report)
+	assert.EqualError(t, err, "test error")
 }
