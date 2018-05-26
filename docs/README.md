@@ -28,6 +28,22 @@ $ go install github.com/eltorocorp/drygopher/drygopher
 ## Basic Usage
 
 ```
+Usage:
+  drygopher [flags]
+
+Examples:
+
+Analyze coverage of all packages below the current directory, expecting 100%
+coverage, and require that all packages participate in coverage analysis
+(regardless of if they have/need tests). No gopher needs to be this dry.
+
+  $ drygopher
+
+Lower the coverage standard to 98.2% and change the name of the coverage profile
+file.
+
+  $ drygopher -s 98.2 -p coveragedata.txt
+
 Run coverage analysis, excluding vendor and test packages, and suppress the
 generation of a coverage profile.
 
@@ -52,7 +68,7 @@ The following commands are all equivalent:
   Using groups of explicit expressions:
   $drygopher -e "/vendor/,_test" -e "'cmd$','iface$'" -e mock
 
-  Using defaults and a single experssion:
+  Using defaults and a single expression:
   $drygopher -d -e "'cmd$|iface$|mock'"
 
 Note that when supplying a list of expressions for -e, the list must be comma
@@ -78,6 +94,7 @@ Flags:
                              profile file.
 ```
 
+## Details
 ### Cross-Package Coverage
 The native go tooling ([go test](https://golang.org/cmd/go/#hdr-Test_packages)) is unable to build coverage statistics for more than one package at a time. Perhaps some day this will change. 
 Other tools such as [axw/gocov](https://github.com/axw/gocov), [vieux/gocover.io](https://github.com/vieux/gocover.io),  [hay14busa/goverage](https://github.com/vieux/gocover.io), [dave/courtney](https://github.com/dave/courtney), and [others](https://github.com/search?l=Go&o=desc&p=1&q=go+coverage&s=stars&type=Repositories) all offer some form of cross-package coverage, but have limitations.
