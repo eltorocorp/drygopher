@@ -22,17 +22,3 @@ func (_m *ProfileAPI) BuildAndSaveCoverageProfile(allPackages pckg.Group, covera
 
 	return r0
 }
-
-// SaveCoverageProfile provides a mock function with given fields: fileName, rawData
-func (_m *ProfileAPI) SaveCoverageProfile(fileName string, rawData []string) error {
-	ret := _m.Called(fileName, rawData)
-
-	var r0 error
-	if rf, ok := ret.Get(0).(func(string, []string) error); ok {
-		r0 = rf(fileName, rawData)
-	} else {
-		r0 = ret.Error(0)
-	}
-
-	return r0
-}

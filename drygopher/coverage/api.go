@@ -61,7 +61,7 @@ func (a *API) AnalyzeUnitTestCoverage(exclusionPatterns []string, coverageStanda
 		err = a.profile.BuildAndSaveCoverageProfile(allPackages, coverageProfileName)
 	}
 
-	if actualCoveragePercentage < coverageStandard {
+	if actualCoveragePercentage*100.0 < coverageStandard {
 		err = coverageerror.New(coverageStandard, actualCoveragePercentage)
 	}
 	return
