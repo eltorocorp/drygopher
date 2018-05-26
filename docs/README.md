@@ -13,11 +13,70 @@ Good question, Jimmy.
 
 There are a lot of go coverage tools available, some better than others. Here's why *drygopher* will keep your gopher dry and safe:
 
-* Cross-Package Coverage: Calculate coverage across multiple packages (even those with no associated tests).
-* Consolidated Stats: Consolidates cover profile data into a single file.
-* Convention Over Code: Setup conventions for excluding packages from test coverage.
-* Coverage Report: Output coverage report to stdout (more friendly than raw cover profile).
-* Set Your Standard: *drygopher* assumes you want 100% coverage by default, but you can override this with ease.
+* [Cross-Package Coverage](#cross-package-coverage): Calculate coverage across multiple packages (even those with no associated tests).
+* [Consolidated Stats](#consolidated-stats): Consolidates cover profile data into a single file.
+* [Convention Over Code](#convention-over-code): Setup conventions for excluding packages from test coverage.
+* [Coverage Report](#coverage-report): Output coverage report to stdout (more friendly than raw cover profile).
+* [Set Your Standard](#set-your-standard): *drygopher* assumes you want 100% coverage by default, but you can override this with ease.
+
+## To Install
+
+```
+$ go install github.com/eltorocorp/drygopher/drygopher
+```
+
+## Basic Usage
+
+```
+Run coverage analysis, excluding vendor and test packages, and suppress the
+generation of a coverage profile.
+
+  $ drygopher -d --suppressprofile
+
+Run coverage analysis, excluding vendor and test packages, and also exclude any
+packages whose name ends with "service". Note that in this case, we enclose the
+expression in single quotes to prevent globbing.
+
+  $drygopher -d -e 'service$'
+
+Run coverage analysis, excluding vendor and test packages, and packages that end
+in cmd, or iface, or contain mock anywhere in the name.
+The following commands are all equivalent:
+
+  Using defaults plus a comma separated list of expressions:
+  $drygopher -d -e "'cmd$','iface$',mock"
+
+  Using defaults and explicit expressions:
+  $drygopher -d -e 'cmd$' -e 'iface$' -e mock
+
+  Using groups of explicit expressions:
+  $drygopher -e "/vendor/,_test" -e "'cmd$','iface$'" -e mock
+
+  Using defaults and a single experssion:
+  $drygopher -d -e "'cmd$|iface$|mock'"
+
+Note that when supplying a list of expressions for -e, the list must be comma
+delimited. As such, literal commas cannot be used when supplying a list of
+expressions for the -e flag. Generally, this shouldn't be an issue since commas
+are not typically valid in package names.
+
+
+Flags:
+  -d, --defaultexclusions    Exclude vendor and _test packages from coverage
+                             analysis. This flag can be combined with the
+                             exclusions flag.
+  -e, --exclusions strings   A set of regular expressions used to define
+                             packages to exclude from coverage analysis. This
+                             flag can be combined with the defaultexclusions
+                             flag.
+  -h, --help                 help for drygopher
+  -p, --profilename string   The name of the coverage profile file. This flag
+                             has no effect if the suppressprofile flag is also
+                             set. (default "coverage.out")
+  -s, --standard float       Coverage standard to use. (default 100)
+      --suppressprofile      Supply this flag to suppress creating the coverage
+                             profile file.
+```
 
 ### Cross-Package Coverage
 The native go tooling ([go test](https://golang.org/cmd/go/#hdr-Test_packages)) is unable to build coverage statistics for more than one package at a time. Perhaps some day this will change. 
