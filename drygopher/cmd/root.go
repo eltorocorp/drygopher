@@ -52,7 +52,7 @@ The following commands are all equivalent:
   Using groups of explicit expressions:
   $drygopher -e "/vendor/,_test" -e "'cmd$','iface$'" -e mock
 
-  Using defaults and a single experssion:
+  Using defaults and a single expression:
   $drygopher -d -e "'cmd$|iface$|mock'"
 
 Note that when supplying a list of expressions for -e, the list must be comma delimited. As such, literal commas cannot be used when supplying a list of expressions for the -e flag. Generally, this shouldn't be an issue since commas are not typically valid in package names.
@@ -77,7 +77,7 @@ var rootCmd = &cobra.Command{
 		analysisAPI := analysis.New(rawAPI)
 		coverageAPI := coverage.New(packageAPI, analysisAPI, profileAPI, reportAPI)
 
-		return coverageAPI.AnalyzeUnitTestCoverage(exclusionPatterns, coverageStandard, suppressProfile, profileName)
+		return coverageAPI.AnalyzeUnitTestCoverage(packageExclusions, coverageStandard, suppressProfile, profileName)
 	},
 	PreRunE: func(cmd *cobra.Command, args []string) (err error) {
 		if coverageStandard < 0 {
