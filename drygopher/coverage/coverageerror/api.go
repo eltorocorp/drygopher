@@ -18,5 +18,5 @@ func New(standardPercentage, actualPercentage float64) CoverageBelowStandard {
 }
 
 func (e CoverageBelowStandard) Error() string {
-	return fmt.Sprintf("coverage of %v%% is below the standard of %v%%", e.actualPercentage, e.standardPercentage)
+	return fmt.Sprintf("coverage of %.2f%% is below the standard of %.2f%%", e.actualPercentage, e.standardPercentage)
 }
