@@ -1,6 +1,8 @@
 # drygopher
 Keep your coverage high, and your gopher dry.
 
+[![Go Report Card](https://goreportcard.com/badge/github.com/eltorocorp/drygopher)](https://goreportcard.com/report/github.com/eltorocorp/drygopher)
+
 *drygopher* is yet another coverage analysis tool for go.
 
 Its purpose is to keep your gopher dry by ensuring that that all of the code in your project is covered by tests, according to conventions you specify. 
