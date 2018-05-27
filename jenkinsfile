@@ -1,6 +1,10 @@
 pipeline {
-    agent  {
-        docker { image 'golang:1.10' } 
+    agent {
+    docker {
+            image 'golang:1.10'
+            reuseNode true
+            args '-v $WORKSPACE/components/drygopher:/go/src/drygopher'
+        }
     }
     stages {
         stage('Prepare') {
@@ -8,19 +12,18 @@ pipeline {
                 checkout scm
                 echo 'Preparing build environment...'
                 sh 'go get -u github.com/golang/dep/cmd/dep'
-                mv '/var/lib/jenkins/workspace/quote\ team/drygopher /go/src/drygopher'
             }
         }
         stage('Build') {
             steps {
                 echo 'Building...'
-                sh 'make build'
+                sh 'cd $GOPATH/src/drygpher && make build'
             }
         }
         stage('Test') {
             steps {
                 echo 'Testing...'
-                sh 'make test'
+                sh 'cd $GOPATH/src/drygpher && make test'
             }
         }
     }
