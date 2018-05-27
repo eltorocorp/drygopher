@@ -4,11 +4,10 @@ pipeline {
     }
 
     stages {
-        stage('PrepareBuildEnvironment') {
+        stage('Prepare') {
             steps {
                 echo 'Preparing build environment...'
-                sh 'make prepare'
-                sh 'make install'
+                sh 'curl https://raw.githubusercontent.com/golang/dep/master/install.sh | sh'
             }
         }
         stage('Build') {
