@@ -17,6 +17,7 @@ pipeline {
         stage('Build') {
             steps {
                 echo 'Building...'
+                sh 'ls -a $GOPATH/src/drygopher'
                 sh 'cd $GOPATH/src/drygopher && make build'
             }
         }
