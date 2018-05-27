@@ -3,7 +3,8 @@
 all: build test
 
 build:
-	echo $$PWD
+	@echo $$PWD
+	@go env
 	@echo Updating dependencies...
 	@dep ensure
 	@cd drygopher && go install 
