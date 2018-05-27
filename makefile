@@ -2,11 +2,8 @@
 
 all: build test
 
-prepare:
-	@curl https://raw.githubusercontent.com/golang/dep/master/install.sh | sh
-.PHONY: prepare
-
 build:
+	echo $$PWD
 	@echo Updating dependencies...
 	@dep ensure
 	@cd drygopher && go install 
