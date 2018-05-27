@@ -3,11 +3,16 @@ pipeline {
         docker { image 'golang:1.10' } 
     }
 
+    ws("${JENKINS_HOME}/jobs/${JOB_NAME}/builds/${BUILD_ID}/") {
+            withEnv(["GOPATH=${JENKINS_HOME}/jobs/${JOB_NAME}/builds/${BUILD_ID}"]) {
+        }
+    }
+
     stages {
         stage('Prepare') {
             steps {
                 echo 'Preparing build environment...'
-                sh 'curl https://raw.githubusercontent.com/golang/dep/master/install.sh | sh'
+                sh 'go get -u github.com/golang/dep/cmd/dep'
             }
         }
         stage('Build') {
