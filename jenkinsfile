@@ -17,13 +17,13 @@ pipeline {
         stage('Build') {
             steps {
                 echo 'Building...'
-                sh 'cd $GOPATH/src/drygpher && make build'
+                sh 'cd $GOPATH/src/drygopher && make build'
             }
         }
         stage('Test') {
             steps {
                 echo 'Testing...'
-                sh 'cd $GOPATH/src/drygpher && make test'
+                sh 'cd $GOPATH/src/drygopher && make test'
             }
         }
     }
