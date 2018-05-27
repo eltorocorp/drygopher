@@ -3,7 +3,7 @@ pipeline {
     docker {
             image 'golang:1.10'
             reuseNode true
-            args '-v $WORKSPACE/components/drygopher:/go/src/drygopher'
+            args '-v $WORKSPACE/drygopher:/go/src/drygopher'
         }
     }
     stages {
