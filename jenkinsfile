@@ -8,6 +8,7 @@ pipeline {
                 checkout scm
                 echo 'Preparing build environment...'
                 sh 'go get -u github.com/golang/dep/cmd/dep'
+                mv '/var/lib/jenkins/workspace/quote\ team/drygopher /go/src/drygopher'
             }
         }
         stage('Build') {
