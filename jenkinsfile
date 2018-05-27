@@ -9,6 +9,11 @@ pipeline {
     }
 
     stages {
+        stage('foo'){
+            steps {
+                echo 'foo'
+            }
+        }
         stage('Prepare') {
             steps {
                 echo 'Preparing build environment...'
