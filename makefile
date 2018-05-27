@@ -3,6 +3,7 @@
 all: build test
 
 build:
+	@echo build
 	@echo $$PWD
 	@go env
 	@echo Updating dependencies...
