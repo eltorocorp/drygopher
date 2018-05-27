@@ -1,20 +1,24 @@
 pipeline {
-    agent any
+    agentdocker { image 'golang:1.10' } 
 
     stages {
+        stage('PrepareBuildEnvironment') {
+            steps {
+                echo 'Preparing build environment...'
+                sh 'make prepare'
+                sh 'make install'
+            }
+        }
         stage('Build') {
             steps {
-                echo 'Building..'
+                echo 'Building...'
+                sh 'make build'
             }
         }
         stage('Test') {
             steps {
-                echo 'Testing..'
-            }
-        }
-        stage('Deploy') {
-            steps {
-                echo 'Deploying....'
+                echo 'Testing...'
+                sh 'make test'
             }
         }
     }

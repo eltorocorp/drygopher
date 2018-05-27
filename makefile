@@ -1,12 +1,16 @@
 
 
-all: install test
+all: build test
 
-install:
-	# @echo Updating dependencies...
-	# @dep ensure
+prepare:
+	@curl https://raw.githubusercontent.com/golang/dep/master/install.sh | sh
+.PHONY: prepare
+
+build:
+	@echo Updating dependencies...
+	@dep ensure
 	@cd drygopher && go install 
-.PHONY: install
+.PHONY: build
 
 test:
 	@echo Purging old mocks...
