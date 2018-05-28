@@ -3,7 +3,6 @@ pipeline {
         docker {
             image 'golang:1.10'
             reuseNode true
-            args "-v ${WORKSPACE}/${env.JOB_NAME}_${env.GIT_BRANCH}-${env.BUILD_ID}:/go/src/drygopher"
         }
     }
     stages {
@@ -12,6 +11,7 @@ pipeline {
                 echo 'Preparing build environment...'
                 sh 'go get -u github.com/vektra/mockery/.../'
                 sh 'go get -u github.com/golang/dep/cmd/dep'
+                sh 'mkdir -p $GOPATH/src/drygopher && mv $(pwd) $GOPATH/src/drygopher'
             }
         }
         stage('Build') {
