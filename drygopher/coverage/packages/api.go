@@ -34,6 +34,7 @@ func (a *API) GetPackages(exclusionPatterns []string) (packages []string, err er
 	for _, exclusionPattern := range exclusionPatterns {
 		grepString += fmt.Sprintf(" | grep -v %v", exclusionPattern)
 	}
+	log.Println(grepString)
 	cmd := a.execAPI.Command("sh", "-c", grepString)
 	out, err = cmd.CombinedOutput()
 	if err != nil {
