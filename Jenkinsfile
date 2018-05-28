@@ -18,9 +18,11 @@ node {
         } catch (Exception err) {
             currentBuild.result = 'FAILURE'
         }
-
+        
         if (currentBuild.result == 'SUCCESS') {
-            echo 'Yay!'
+            def badgeServerURL = 'badges.awsp.eltoro.com'
+            def payload = 'project=drygopher&item=build_status&value=passing&color=green'
+            sh "curl -X POST --data-urlencode \'payload=${payload}\' ${badgeServerURL}"
         } else {
             echo 'KAHN!'
         }
