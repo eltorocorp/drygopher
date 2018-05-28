@@ -3,7 +3,7 @@ pipeline {
         dockerfile true
     }
     stages {
-        step('build') {
+        stage('build') {
             echo 'building...'
         }
     }
