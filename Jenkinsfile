@@ -5,7 +5,7 @@ pipeline {
         }
     }
     environment {
-        GOPATH = 'pwd'
+        GOPATH = '$pwd'
     }
     stages {
         stage('setup') {
