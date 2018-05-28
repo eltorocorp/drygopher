@@ -1,5 +1,8 @@
 pipeline {
     agent {
+        docker {
+            args '-u root'
+        }
         dockerfile true
     }
     stages {
