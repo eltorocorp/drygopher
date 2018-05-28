@@ -2,7 +2,7 @@ pipeline {
     agent {
         docker {
             image 'golang:1.10'
-            args '-v .:/go/src/github.com/eltorocorp/drygopher:rw -u root'
+            args '-v ./:/go/src/github.com/eltorocorp/drygopher:rw -u root'
         }
     }
     stages {
