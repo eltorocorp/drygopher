@@ -11,10 +11,13 @@ node {
     }
 
     docker.image("golang:1.10").inside("-v ${pwd()}:${goPath} -u root") {
-        stage("Build and Test") {
-            sh "cd ${goPath} && make prebuild"
-            sh "cd ${goPath} && make build"
-            sh "cd ${goPath} && make test"
-        }
+        stage 'PreBuild'
+        sh "cd ${goPath} && make prebuild"
+
+        stage 'Build'
+        sh "cd ${goPath} && make build"
+
+        stage 'Test'
+        sh "cd ${goPath} && make test"
     }
 }
