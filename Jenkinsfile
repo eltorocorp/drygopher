@@ -5,7 +5,8 @@ node {
 
     docker.image("golang:1.10").inside("-v ${pwd()}:${goPath} -u root") {
         try {
-            stage 'PreBuild'
+            stage 'Pre-Build'
+            sh "curl -X POST 'http://badges.awsp.eltoro.com?project=drygopher&item=build&value=pending&color=blue'"
             sh "cd ${goPath} && make prebuild"
 
             stage 'Build'
@@ -14,17 +15,12 @@ node {
             stage 'Test'
             sh "cd ${goPath} && make test"
 
+            stage "Post-Build"
+            sh "curl -X POST 'http://badges.awsp.eltoro.com?project=drygopher&item=build&value=passing&color=green'"
             currentBuild.result = 'SUCCESS'
         } catch (Exception err) {
+            sh "curl -X POST 'http://badges.awsp.eltoro.com?project=drygopher&item=build&value=failing&color=red'"
             currentBuild.result = 'FAILURE'
-        }
-        
-        if (currentBuild.result == 'SUCCESS') {
-            def badgeServerURL = 'http://badges.awsp.eltoro.com'
-            def payload = 'project=drygopher&item=build_status&value=passing&color=blue'
-            sh "curl -X POST --data-urlencode ${badgeServerURL}?${payload}"
-        } else {
-            echo 'KAHN!'
         }
     }
 }
