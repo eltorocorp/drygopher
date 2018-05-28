@@ -3,6 +3,7 @@ pipeline {
         docker {
             image 'golang:1.10'
             reuseNode true
+            args "-v ${PWD}:/go/src/drygopher -w /go/src/drygopher"
         }
     }
     stages {
@@ -11,20 +12,18 @@ pipeline {
                 echo 'Preparing build environment...'
                 sh 'go get -u github.com/vektra/mockery/.../'
                 sh 'go get -u github.com/golang/dep/cmd/dep'
-                sh 'mkdir -p $GOPATH/src/drygopher && mv $(pwd) $GOPATH/src/drygopher'
             }
         }
         stage('Build') {
             steps {
                 echo 'Building...'
-                sh 'ls -a $GOPATH/src/drygopher'
-                sh 'cd $GOPATH/src/drygopher && make build'
+                sh 'make build'
             }
         }
         stage('Test') {
             steps {
                 echo 'Testing...'
-                sh 'cd $GOPATH/src/drygopher && make test'
+                sh 'make test'
             }
         }
     }
