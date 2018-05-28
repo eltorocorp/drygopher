@@ -32,7 +32,7 @@ pipeline {
     }
     post {
         always {
-            dir('.') {
+            dir('/go/src/github.com/eltorocorp/drygopher') {
                 deleteDir()
             }
         }
