@@ -21,8 +21,8 @@ node {
         
         if (currentBuild.result == 'SUCCESS') {
             def badgeServerURL = 'badges.awsp.eltoro.com'
-            def payload = 'project=drygopher&item=build_status&value=passing&color=green'
-            sh "curl -X POST --data-urlencode \'payload=${payload}\' ${badgeServerURL}"
+            def payload = 'project=drygopher&item=build_status&value=passing&color=blue'
+            sh "curl -X POST --application/x-www-form-urlencoded ${badgeServerURL}?${payload}"
         } else {
             echo 'KAHN!'
         }
