@@ -20,7 +20,7 @@ node {
         }
         
         if (currentBuild.result == 'SUCCESS') {
-            def badgeServerURL = 'badges.awsp.eltoro.com'
+            def badgeServerURL = 'http://badges.awsp.eltoro.com'
             def payload = 'project=drygopher&item=build_status&value=passing&color=blue'
             sh "curl -X POST --data-urlencode ${badgeServerURL}?${payload}"
         } else {
