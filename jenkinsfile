@@ -1,6 +1,6 @@
 pipeline {
     agent {
-    docker {
+        docker {
             image 'golang:1.10'
             reuseNode true
             args '-v $WORKSPACE/drygopher:/go/src/drygopher'
