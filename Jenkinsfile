@@ -13,8 +13,6 @@ pipeline {
         stage('Prepare') {
             steps {
                 echo 'Preparing build environment...'
-                sh 'sudo chmod -R g+w'
-                sh 'git clean -xffd'
                 sh 'go get github.com/vektra/mockery/.../'
                 sh 'go get github.com/golang/dep/cmd/dep'
             }
@@ -30,6 +28,11 @@ pipeline {
                 echo 'Testing...'
                 sh 'cd /go/src/github.com/eltorocorp/drygopher && make test'
             }
+        }
+    }
+    post {
+        always {
+            deleteDir() 
         }
     }
 }
