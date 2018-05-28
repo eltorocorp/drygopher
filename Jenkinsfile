@@ -32,7 +32,9 @@ pipeline {
     }
     post {
         always {
-            deleteDir() 
+            dir('.') {
+                deleteDir()
+            }
         }
     }
 }
