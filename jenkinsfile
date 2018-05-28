@@ -10,8 +10,7 @@ pipeline {
         stage('Prepare') {
             steps {
                 echo 'Preparing build environment...'
-                sh 'go install github.com/vektra/mockery'
-                sh 'go get -u github.com/golang/dep/cmd/dep'
+                sh 'go install github.com/vektra/mockery && go get -u github.com/golang/dep/cmd/dep'
             }
         }
         stage('Build') {
