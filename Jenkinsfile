@@ -1,33 +1,27 @@
-pipeline {
-    agent {
-        docker {
-            image 'golang:1.10'
+node {
+    def root = tool name: 'Go1.10', type: 'go'
+    ws("${JENKINS_HOME}/jobs/${JOB_NAME}/builds/${BUILD_ID}/src/github.com/eltorocorp/drygopher") {
+        withEnv(["GOROOT=${root}", "GOPATH=${JENKINS_HOME}/jobs/${JOB_NAME}/builds/${BUILD_ID}/", "PATH+GO=${root}/bin"]) {
+            env.PATH="${GOPATH}/bin:$PATH"
+            
+            stage 'Checkout'
+        
+            git url: 'https://github.com/eltorocorp/drygopher.git'
+        
+            stage 'preTest'
+            sh 'go version'
+            sh 'go get -u github.com/golang/dep/...'
+            sh 'dep init'
+            
+            stage 'Test'
+            sh 'go vet'
+            sh 'go test -cover'
+            
+            stage 'Build'
+            sh 'go build .'
+            
+            stage 'Deploy'
+            // Do nothing.
         }
-    }
-    stages {
-        stage('setup') {
-            steps {
-                echo 'setup...'
-                script {
-                    def workspace = pwd()
-                }
-                sh "export GOPATH=${workspace}" 
-            }
-        }
-        stage('build') {
-            steps {
-                echo 'building...'
-                sh 'go env'
-                sh 'ls /go/src/github.com/eltorocorp/drygopher'
-                sh 'cd /go/src/github.com/eltorocorp/drygopher && make build'
-            }
-        }
-        stage('test') {
-            steps {
-                echo 'testing...'
-                sh 'cd /go/src/github.com/eltorocorp/drygopher && make test'
-            }
-        }
-
     }
 }
