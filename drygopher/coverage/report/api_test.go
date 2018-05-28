@@ -14,7 +14,7 @@ import (
 func Test_BuildCoverageReport_Normally_BuildsAReport(t *testing.T) {
 	execAPI := new(mocks.ExecAPI)
 	commandAPI := new(mocks.CommandAPI)
-	commandAPI.On("Run").Return(nil)
+	commandAPI.On("CombinedOutput").Return([]byte("excludedpackage"), nil)
 	execAPI.On("Command", mock.Anything, mock.Anything, mock.Anything).Return(commandAPI)
 
 	reportAPI := report.New(execAPI)
@@ -39,6 +39,7 @@ Packages Excluded From Coverage
 
 excludedpackage
 ---------------
+excludedpackage
 
 Analyzed Packages
 -----------------
@@ -55,7 +56,7 @@ estimatedpkg	0	0	0	0.0%	yes
 func Test_BuildCoverageReport_ErrorPrintingExludedPackages_ReturnsError(t *testing.T) {
 	execAPI := new(mocks.ExecAPI)
 	commandAPI := new(mocks.CommandAPI)
-	commandAPI.On("Run").Return(errors.New("test error"))
+	commandAPI.On("CombinedOutput").Return(nil, errors.New("test error"))
 	execAPI.On("Command", mock.Anything, mock.Anything, mock.Anything).Return(commandAPI)
 
 	reportAPI := report.New(execAPI)

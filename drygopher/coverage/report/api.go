@@ -2,6 +2,7 @@ package report
 
 import (
 	"fmt"
+	"log"
 	"strconv"
 	"strings"
 
@@ -39,10 +40,11 @@ func (a *API) BuildCoverageReport(allPackages pckg.Group, exclusionPatterns []st
 		pl() // space
 		pl(exclusionPattern)
 		pl(pad.Right("", len(exclusionPattern), "-"))
-		err := a.printExcludedPackages(exclusionPattern)
+		output, err := a.getExcludedPackages(exclusionPattern)
 		if err != nil {
 			return "", err
 		}
+		pl(output)
 	}
 
 	pl()
@@ -77,9 +79,18 @@ func (a *API) BuildCoverageReport(allPackages pckg.Group, exclusionPatterns []st
 	return sb.String(), nil
 }
 
-func (a *API) printExcludedPackages(exclusionPattern string) error {
-	cmd := a.execAPI.Command("sh", "-c", fmt.Sprintf("go list ./... | grep %v", exclusionPattern))
-	return cmd.Run()
+func (a *API) getExcludedPackages(exclusionPattern string) (string, error) {
+	// Appending the the '|| echo none' is important as it both squeches a
+	// non-zero exit code should grep not return any results, and improves the
+	// UX by including a value for exclusions that are noops.
+	cmdtxt := fmt.Sprintf("go list ./... | grep %v || echo none", exclusionPattern)
+	cmd := a.execAPI.Command("sh", "-c", cmdtxt)
+	output, err := cmd.CombinedOutput()
+	if err != nil {
+		log.Println(cmdtxt)
+		return "", err
+	}
+	return string(output), err
 }
 
 func ftoa(f float64) string {

@@ -5,16 +5,20 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Launch",
+            "name": "debug",
             "type": "go",
             "request": "launch",
             "mode": "debug",
             "remotePath": "",
             "port": 2345,
             "host": "127.0.0.1",
-            "program": "${fileDirname}",
+            "program": "${workspaceFolder}/drygopher",
             "env": {},
-            "args": [],
+            "args": [
+                "-d",
+                "-e",
+                "/mocks,/interfaces,/cmd,/host,'iface$','drygopher$'"
+            ],
             "showLog": true
         }
     ]
