@@ -31,6 +31,7 @@ func (a *API) GetRawCoverageAnalysisForPackage(pkg string) ([]string, error) {
 	covermode := "count"
 	analyzeCmdText := "go test -covermode=%v -coverprofile=tmp.out %v"
 	analyzeCmdText = fmt.Sprintf(analyzeCmdText, covermode, pkg)
+	log.Println(analyzeCmdText)
 	analyzeCoverageCmd := a.execAPI.Command("sh", "-c", analyzeCmdText)
 	var result []byte
 	result, err := analyzeCoverageCmd.Output()
