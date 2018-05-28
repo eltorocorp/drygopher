@@ -3,8 +3,8 @@ pipeline {
         docker {
             image 'golang:1.10'
             reuseNode true
-            customWorkspace '/var/lib/jenkins/workspace/drygopher'
-            args '-v /var/lib/jenkins/workspace/drygopher:/go/src/github.com/eltorocorp/drygopher:rw'
+            customWorkspace '/var/lib/jenkins/workspace/github.com/eltorocorp/drygopher'
+            args '-v /var/lib/jenkins/workspace/github.com/eltorocorp/drygopher:/go/src/github.com/eltorocorp/drygopher:rw'
         }
     }
     stages {
