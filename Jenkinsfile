@@ -1,5 +1,5 @@
 node {
-    def root = tool name: 'Go1.10', type: 'go'
+    def root = tool name: 'Go1.8', type: 'go'
     ws("${JENKINS_HOME}/jobs/${JOB_NAME}/builds/${BUILD_ID}/src/github.com/eltorocorp/drygopher") {
         withEnv(["GOROOT=${root}", "GOPATH=${JENKINS_HOME}/jobs/${JOB_NAME}/builds/${BUILD_ID}/", "PATH+GO=${root}/bin"]) {
             env.PATH="${GOPATH}/bin:$PATH"
@@ -19,9 +19,6 @@ node {
             
             stage 'Build'
             sh 'go build .'
-            
-            stage 'Deploy'
-            // Do nothing.
         }
     }
 }
