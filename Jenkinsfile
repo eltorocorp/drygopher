@@ -10,8 +10,6 @@ pipeline {
     stages {
         stage('Prepare') {
             steps {
-                echo 'Go Environment:'
-                sh 'go env'
                 echo 'Preparing build environment...'
                 sh 'go get github.com/vektra/mockery/.../'
                 sh 'go get github.com/golang/dep/cmd/dep'
@@ -27,6 +25,7 @@ pipeline {
             steps {
                 echo 'Testing...'
                 sh 'cd /go/src/drygopher && make test'
+                sh 'ls /go/src/drygopher'
             }
         }
     }
