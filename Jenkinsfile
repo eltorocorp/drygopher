@@ -10,8 +10,8 @@ node {
         checkout scm
     }
 
-    stage("Build and Test") {
-        docker.image("golang:1.10").inside("-v ${pwd()}:${goPath} -u root") {
+    docker.image("golang:1.10").inside("-v ${pwd()}:${goPath} -u root") {
+        stage("Build and Test") {
             sh "cd ${goPath} && make prebuild"
             sh "cd ${goPath} && make build"
             sh "cd ${goPath} && make test"
