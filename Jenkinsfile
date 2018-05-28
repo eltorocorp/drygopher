@@ -3,18 +3,11 @@ pipeline {
         docker {
             image 'golang:1.10'
             reuseNode true
-            customWorkspace '/var/lib/jenkins/workspace/github.com/eltorocorp/drygopher'
-            args '-v /var/lib/jenkins/workspace/github.com/eltorocorp/drygopher:/go/src/github.com/eltorocorp/drygopher:rw'
+            customWorkspace '/var/lib/jenkins/workspace/drygopher'
+            args '-v /var/lib/jenkins/workspace/drygopher:/go/src/github.com/eltorocorp/drygopher'
         }
     }
     stages {
-        stage('Prepare') {
-            steps {
-                echo 'Preparing build environment...'
-                sh 'go get github.com/vektra/mockery/.../'
-                sh 'go get github.com/golang/dep/cmd/dep'
-            }
-        }
         stage('Build') {
             steps {
                 echo 'Building...'
