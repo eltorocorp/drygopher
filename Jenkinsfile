@@ -24,7 +24,7 @@ pipeline {
         stage('Test') {
             steps {
                 echo 'Testing...'
-                sh 'cd /go/src/github.com/eltorocorp/drygopher && make test || cat coverage.out'
+                sh 'cd /go/src/github.com/eltorocorp/drygopher && make test'
             }
         }
     }
