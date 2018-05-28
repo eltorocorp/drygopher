@@ -1,24 +1,19 @@
-node {
-    def root = tool name: 'Go1.8', type: 'go'
-    ws("${JENKINS_HOME}/jobs/${JOB_NAME}/builds/${BUILD_ID}/src/github.com/eltorocorp/drygopher") {
-        withEnv(["GOROOT=${root}", "GOPATH=${JENKINS_HOME}/jobs/${JOB_NAME}/builds/${BUILD_ID}/", "PATH+GO=${root}/bin"]) {
-            env.PATH="${GOPATH}/bin:$PATH"
-            
-            stage 'Checkout'
-        
-            git url: 'https://github.com/eltorocorp/drygopher.git'
-        
-            stage 'preTest'
-            sh 'go version'
-            sh 'go get -u github.com/golang/dep/...'
-            sh 'dep init'
-            
-            stage 'Test'
-            sh 'go vet'
-            sh 'go test -cover'
-            
-            stage 'Build'
-            sh 'go build .'
+#!/usr/bin/env groovy
+
+// this will start an executor on a Jenkins agent with the docker label
+node('docker') {
+    String applicationName = "drygopher"
+    String buildNumber = "${env.BUILD_NUMBER}"
+    String goPath = "/go/src/github.com/eltorocorp/${applicationName}"
+
+    stage('Checkout from GitHub') {
+        checkout scm
+    }
+
+    stage("Build and Test") {
+        docker.image("golang:1.10").inside("-v ${pwd()}:${goPath}") {
+            sh "cd ${goPath} && make build"
+            sh "cd ${goPath} && make test"
         }
     }
 }
