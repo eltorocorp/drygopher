@@ -17,6 +17,8 @@ pipeline {
         stage('Build') {
             steps {
                 echo 'Building...'
+                sh 'echo pwd && pwd'
+                sh 'echo drygopher directory && ls go/src/drygopher'
                 sh 'make build'
             }
         }
