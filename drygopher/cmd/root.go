@@ -16,11 +16,12 @@ import (
 )
 
 var (
-	coverageStandard     float64
-	profileName          string
-	suppressProfile      bool
-	exclusionPatterns    []string
-	useDefaultExclusions bool
+	coverageStandard       float64
+	profileName            string
+	suppressProfile        bool
+	exclusionPatterns      []string
+	useDefaultExclusions   bool
+	suppressPercentageFile bool
 )
 
 const examples = `
@@ -77,7 +78,7 @@ var rootCmd = &cobra.Command{
 		analysisAPI := analysis.New(rawAPI)
 		coverageAPI := coverage.New(packageAPI, analysisAPI, profileAPI, reportAPI)
 
-		return coverageAPI.AnalyzeUnitTestCoverage(packageExclusions, coverageStandard, suppressProfile, profileName)
+		return coverageAPI.AnalyzeUnitTestCoverage(packageExclusions, coverageStandard, suppressProfile, profileName, suppressPercentageFile)
 	},
 	PreRunE: func(cmd *cobra.Command, args []string) (err error) {
 		if coverageStandard < 0 {
@@ -106,6 +107,7 @@ func init() {
 	rootCmd.Flags().BoolVar(&suppressProfile, "suppressprofile", false, wrap("Supply this flag to suppress creating the coverage profile file."))
 	rootCmd.Flags().StringSliceVarP(&exclusionPatterns, "exclusions", "e", []string{}, wrap("A set of regular expressions used to define packages to exclude from coverage analysis. This flag can be combined with the defaultexclusions flag."))
 	rootCmd.Flags().BoolVarP(&useDefaultExclusions, "defaultexclusions", "d", false, wrap("Exclude vendor and _test packages from coverage analysis. This flag can be combined with the exclusions flag."))
+	rootCmd.Flags().BoolVar(&suppressPercentageFile, "suppresspctfile", false, wrap("Suppress the creation of the coverarage percentage file ('coveragepct')."))
 
 	rootCmd.DisableFlagsInUseLine = true
 	rootCmd.SilenceUsage = true

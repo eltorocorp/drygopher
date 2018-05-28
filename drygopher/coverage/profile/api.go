@@ -1,6 +1,7 @@
 package profile
 
 import (
+	"fmt"
 	"os"
 	"sort"
 	"strings"
@@ -41,6 +42,12 @@ func (a *API) BuildAndSaveCoverageProfile(allPackages pckg.Group, coverageProfil
 		profileData = append(profileData, pkg.RawCoverageData...)
 	}
 	return a.saveCoverageProfile(coverageProfileName, profileData)
+}
+
+// OutputPercentageFile saves a file containing the supplied coverage percentage.
+func (a *API) OutputPercentageFile(coveragePercentage float64) error {
+	pctString := fmt.Sprintf("%.2f", coveragePercentage)
+	return a.osioAPI.WriteFile("coveragepct", []byte(pctString), os.ModePerm)
 }
 
 // SaveCoverageProfile saves the supplied raw data to the desired file.

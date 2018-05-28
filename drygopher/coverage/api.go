@@ -28,7 +28,7 @@ func New(packageAPI interfaces.PackageAPI, analysisAPI interfaces.AnalysisAPI, p
 }
 
 // AnalyzeUnitTestCoverage analyzes unit test coverage across all packages.
-func (a *API) AnalyzeUnitTestCoverage(exclusionPatterns []string, coverageStandard float64, suppressProfile bool, coverageProfileName string) (err error) {
+func (a *API) AnalyzeUnitTestCoverage(exclusionPatterns []string, coverageStandard float64, suppressProfile bool, coverageProfileName string, suppressPercentageFile bool) (err error) {
 	log.Println("Analyzing unit test coverage...")
 	var (
 		packages             []string
@@ -60,9 +60,16 @@ func (a *API) AnalyzeUnitTestCoverage(exclusionPatterns []string, coverageStanda
 	if !suppressProfile {
 		err = a.profile.BuildAndSaveCoverageProfile(allPackages, coverageProfileName)
 	}
+	if err != nil {
+		return
+	}
+
+	if !suppressPercentageFile {
+		a.profile.OutputPercentageFile(100.0 * actualCoveragePercentage)
+	}
 
 	if actualCoveragePercentage*100.0 < coverageStandard {
-		err = coverageerror.New(coverageStandard, actualCoveragePercentage)
+		err = coverageerror.New(coverageStandard, 100.0*actualCoveragePercentage)
 	}
 	return
 }

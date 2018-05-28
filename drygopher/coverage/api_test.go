@@ -27,7 +27,7 @@ func Test_AnalyzeUnitTestCoverage_Normally_ReturnsWithoutError(t *testing.T) {
 
 	coverageAPI := coverage.New(packageAPI, analysisAPI, profileAPI, reportAPI)
 
-	err := coverageAPI.AnalyzeUnitTestCoverage([]string{}, 0, false, "profile")
+	err := coverageAPI.AnalyzeUnitTestCoverage([]string{}, 0, false, "profile", true)
 	assert.NoError(t, err)
 }
 
@@ -40,7 +40,7 @@ func Test_AnalyzeUnitTestCoverage_GetPackagesErrors_ReturnsError(t *testing.T) {
 	reportAPI := new(mocks.ReportAPI)
 	coverageAPI := coverage.New(packageAPI, analysisAPI, profileAPI, reportAPI)
 
-	err := coverageAPI.AnalyzeUnitTestCoverage([]string{}, 0, false, "profile")
+	err := coverageAPI.AnalyzeUnitTestCoverage([]string{}, 0, false, "profile", true)
 	assert.EqualError(t, err, "test error")
 }
 func Test_AnalyzeUnitTestCoverage_GetCoverageStatsReturnError_ReturnsError(t *testing.T) {
@@ -54,7 +54,7 @@ func Test_AnalyzeUnitTestCoverage_GetCoverageStatsReturnError_ReturnsError(t *te
 	reportAPI := new(mocks.ReportAPI)
 	coverageAPI := coverage.New(packageAPI, analysisAPI, profileAPI, reportAPI)
 
-	err := coverageAPI.AnalyzeUnitTestCoverage([]string{}, 0, false, "profile")
+	err := coverageAPI.AnalyzeUnitTestCoverage([]string{}, 0, false, "profile", true)
 	assert.EqualError(t, err, "test error")
 }
 
@@ -81,7 +81,7 @@ func Test_AnalyzeTestCoverage_CoverageBelowStandard_ReturnsCoverageError(t *test
 
 	coverageAPI := coverage.New(packageAPI, analysisAPI, profileAPI, reportAPI)
 
-	err := coverageAPI.AnalyzeUnitTestCoverage([]string{}, 100, false, "profile")
+	err := coverageAPI.AnalyzeUnitTestCoverage([]string{}, 100, false, "profile", true)
 	assert.Error(t, err)
 	assert.IsType(t, coverageerror.CoverageBelowStandard{}, err)
 }
@@ -101,7 +101,7 @@ func Test_AnalyzeTestCoverage_ErrorBuildingCoverageReport_ReturnsError(t *testin
 
 	coverageAPI := coverage.New(packageAPI, analysisAPI, profileAPI, reportAPI)
 
-	err := coverageAPI.AnalyzeUnitTestCoverage([]string{}, 100, false, "profile")
+	err := coverageAPI.AnalyzeUnitTestCoverage([]string{}, 100, false, "profile", true)
 
 	assert.EqualError(t, err, "test error")
 }

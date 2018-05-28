@@ -22,3 +22,17 @@ func (_m *ProfileAPI) BuildAndSaveCoverageProfile(allPackages pckg.Group, covera
 
 	return r0
 }
+
+// OutputPercentageFile provides a mock function with given fields: coveragePercentage
+func (_m *ProfileAPI) OutputPercentageFile(coveragePercentage float64) error {
+	ret := _m.Called(coveragePercentage)
+
+	var r0 error
+	if rf, ok := ret.Get(0).(func(float64) error); ok {
+		r0 = rf(coveragePercentage)
+	} else {
+		r0 = ret.Error(0)
+	}
+
+	return r0
+}
