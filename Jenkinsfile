@@ -2,10 +2,12 @@ pipeline {
     agent {
         docker {
             image 'golang:1.10'
-            reuseNode true
             customWorkspace '/var/lib/jenkins/workspace/drygopher'
             args '-v /var/lib/jenkins/workspace/drygopher:/go/src/github.com/eltorocorp/drygopher:rw -u root'
         }
+    }
+    options {
+        timestamps()
     }
     stages {
         stage('Prepare') {
@@ -26,6 +28,11 @@ pipeline {
                 echo 'Testing...'
                 sh 'cd /go/src/github.com/eltorocorp/drygopher && make test'
             }
+        }
+    }
+    post { 
+        always { 
+            cleanWs()
         }
     }
 }
