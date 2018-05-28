@@ -11,7 +11,7 @@ pipeline {
             steps {
                 echo 'Preparing build environment...'
                 sh 'go get -u github.com/golang/dep/cmd/dep'
-                sh 'go get github.com/vektra/mockery/.../'
+                sh 'go get -u github.com/vektra/mockery/.../'
             }
         }
         stage('Build') {
