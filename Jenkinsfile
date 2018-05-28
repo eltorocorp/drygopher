@@ -32,7 +32,7 @@ pipeline {
     }
     post { 
         always { 
-            cleanWs()
+           step([$class: 'WsCleanup']) 
         }
     }
 }
