@@ -10,23 +10,23 @@ pipeline {
     stages {
         stage('Prepare') {
             steps {
+                echo 'Go Environment:'
+                sh 'go env'
                 echo 'Preparing build environment...'
-                sh 'go get -u github.com/vektra/mockery/.../'
-                sh 'go get -u github.com/golang/dep/cmd/dep'
+                sh 'go get github.com/vektra/mockery/.../'
+                sh 'go get github.com/golang/dep/cmd/dep'
             }
         }
         stage('Build') {
             steps {
                 echo 'Building...'
-                sh 'echo pwd && pwd'
-                sh 'echo drygopher directory && ls go/src/drygopher'
-                sh 'make build'
+                sh 'cd /go/src/drygopher && make build'
             }
         }
         stage('Test') {
             steps {
                 echo 'Testing...'
-                sh 'make test'
+                sh 'cd /go/src/drygopher && make test'
             }
         }
     }
