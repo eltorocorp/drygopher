@@ -11,7 +11,7 @@ pipeline {
                 script {
                     def workspace = pwd()
                 }
-                sh "GOPATH = ${workspace}" 
+                sh "export GOPATH=${workspace}" 
             }
         }
         stage('build') {
