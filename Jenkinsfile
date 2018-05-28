@@ -4,20 +4,20 @@ pipeline {
             image 'golang:1.10'
         }
     }
-    environment {
-        GOPATH = '$pwd'
-    }
     stages {
         stage('setup') {
             steps {
                 echo 'setup...'
-                sh 'pwd'
-                sh 'go env'
+                script {
+                    def workspace = pwd()
+                }
+                sh "GOPATH = ${workspace}" 
             }
         }
         stage('build') {
             steps {
                 echo 'building...'
+                sh 'go env'
                 sh 'ls /go/src/github.com/eltorocorp/drygopher'
                 sh 'cd /go/src/github.com/eltorocorp/drygopher && make build'
             }
