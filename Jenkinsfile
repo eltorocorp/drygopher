@@ -6,9 +6,9 @@ node {
     String buildNumber = "${env.BUILD_NUMBER}"
     String goPath = "/go/src/github.com/eltorocorp/${applicationName}"
 
-    stage('Checkout from GitHub') {
-        checkout scm
-    }
+    // stage('Checkout from GitHub') {
+    //     checkout scm
+    // }
 
     docker.image("golang:1.10").inside("-v ${pwd()}:${goPath} -u root") {
         stage 'PreBuild'
