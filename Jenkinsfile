@@ -24,8 +24,7 @@ pipeline {
         stage('Test') {
             steps {
                 echo 'Testing...'
-                sh 'cd /go/src/drygopher && make test'
-                sh 'ls /go/src/drygopher'
+                sh 'cd /go/src/drygopher && make test || ls -a'
             }
         }
     }
