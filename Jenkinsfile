@@ -6,13 +6,13 @@ pipeline {
         stage('build') {
             steps {
                 echo 'building...'
-                sh 'go/src/github.com/eltorocorp/drygopher/make build'
+                sh '/go/src/github.com/eltorocorp/drygopher/make build'
             }
         }
         stage('test') {
             steps {
                 echo 'testing...'
-                sh 'go/src/github.com/eltorocorp/drygopher/make test'
+                sh '/go/src/github.com/eltorocorp/drygopher/make test'
             }
         }
 
