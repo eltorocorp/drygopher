@@ -19,6 +19,8 @@ node {
 
             stage("Post-Build") {
                 sh "curl -sX POST 'http://badges.awsp.eltoro.com?project=drygopher&item=build&value=passing&color=green'"
+                def coverage = readFile('coveragepct').trim()
+                sh "curl -sX POST 'http://badges.awsp.eltoro.com?project=drygopher&item=coverage&value=${coverage}&color=yellow'"
                 currentBuild.result = 'SUCCESS'
             }
         } catch (Exception err) {
@@ -26,6 +28,5 @@ node {
             currentBuild.result = 'FAILURE'
         }
 
-        sh "curl -sX POST 'http://badges.awsp.eltoro.com?project=drygopher&item=coverage&value=${cat coverage}&color=yellow'"
     }
 }
