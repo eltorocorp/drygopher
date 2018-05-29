@@ -48,6 +48,7 @@ func (a *API) BuildAndSaveCoverageProfile(allPackages pckg.Group, coverageProfil
 // OutputPercentageFile saves a file containing the supplied coverage percentage.
 func (a *API) OutputPercentageFile(coveragePercentage float64) error {
 	pctString := fmt.Sprintf("%.2f", coveragePercentage)
+	log.Println("Writing coverage percentage to 'coveragepct' file.")
 	return a.osioAPI.WriteFile("coveragepct", []byte(pctString), os.ModePerm)
 }
 
@@ -55,6 +56,5 @@ func (a *API) OutputPercentageFile(coveragePercentage float64) error {
 func (a *API) saveCoverageProfile(fileName string, rawData []string) error {
 	sort.StringSlice(rawData).Sort()
 	profile := "mode: count\n" + strings.TrimSpace(strings.Join(rawData, "\n"))
-	log.Println("Writing coverage percentage to 'coveragepct' file.")
 	return a.osioAPI.WriteFile(fileName, []byte(profile), os.ModePerm)
 }
