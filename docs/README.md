@@ -1,7 +1,7 @@
 # drygopher
 Keep your coverage high, and your gopher dry.
 
-[![Go Report Card](https://goreportcard.com/badge/github.com/eltorocorp/drygopher)](https://goreportcard.com/report/github.com/eltorocorp/drygopher) [![Build Status](http://badges.awsp.eltoro.com?project=drygopher&item=build)](http://github.com/eltorocorp/drygopher)
+[![Go Report Card](https://goreportcard.com/badge/github.com/eltorocorp/drygopher)](https://goreportcard.com/report/github.com/eltorocorp/drygopher) [![Build Status](http://badges.awsp.eltoro.com?project=drygopher&item=build)](http://github.com/eltorocorp/drygopher) [![Coverage](http://badges.awsp.eltoro.com?project=drygopher&item=coverage)](http://github.com/eltorocorp/drygopher)
 
 *drygopher* is yet another coverage analysis tool for go.
 
