@@ -181,3 +181,26 @@ func Test_AggregateRawPackageAnalysisData_CallsPresent_TotalCoveredEqualsCallCou
 	assert.Equal(t, expectedStats, *stats)
 	assert.NoError(t, err)
 }
+
+// returns the raw data
+// returns true for unit test failure
+// returns nil error
+func Test_GetRawCoverageAnalysisForPackage_UnitTestFailureDetected_BehavesProperly(t *testing.T) {
+	osioAPI := new(mocks.OSIOAPI)
+	execAPI := new(mocks.ExecAPI)
+	commandAPI := new(mocks.CommandAPI)
+
+	commandAPI.On("Output").Return([]byte("FAIL:"), nil)
+	execAPI.On("Command", mock.Anything, mock.Anything, mock.Anything).Return(commandAPI)
+
+	profileData := "mode: count\ndata"
+	osioAPI.On("ReadFile", mock.Anything).Return([]byte(profileData), nil)
+
+	rawAPI := raw.New(osioAPI, execAPI)
+	result, testFailed, err := rawAPI.GetRawCoverageAnalysisForPackage("somepkg")
+
+	commandAPI.AssertCalled(t, "Output")
+	assert.True(t, testFailed)
+	assert.NoError(t, err)
+	assert.Equal(t, []string{"data"}, result)
+}
