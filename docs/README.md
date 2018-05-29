@@ -76,6 +76,12 @@ delimited. As such, literal commas cannot be used when supplying a list of
 expressions for the -e flag. Generally, this shouldn't be an issue since commas
 are not typically valid in package names.
 
+Use the 'coveragepct' file, which contains the coverage percentage calculated by
+drygopher, as a parameter in some other command. This example shows a trivial
+'echo' command that returns 'Coverage: 100%'.
+
+  $ drygopher -d; echo Coverage: $(cat coveragepct)%
+
 
 Flags:
   -d, --defaultexclusions    Exclude vendor and _test packages from coverage
@@ -90,6 +96,8 @@ Flags:
                              has no effect if the suppressprofile flag is also
                              set. (default "coverage.out")
   -s, --standard float       Coverage standard to use. (default 100)
+      --suppresspctfile      Suppress the creation of the coverarage percentage
+                             file ('coveragepct').
       --suppressprofile      Supply this flag to suppress creating the coverage
                              profile file.
 ```

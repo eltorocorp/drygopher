@@ -3,3 +3,4 @@ vendor/
 Gopkg.lock
 *.out
 *.test
+coveragepct

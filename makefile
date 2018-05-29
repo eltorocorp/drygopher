@@ -1,6 +1,6 @@
 
 
-all: prebuild build test
+local: build test
 
 prebuild:
 	@echo Preparing build tooling...

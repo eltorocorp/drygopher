@@ -1,7 +1,6 @@
 
 node {
-    String applicationName = "drygopher"
-    String goPath = "/go/src/github.com/eltorocorp/${applicationName}"
+    String goPath = "/go/src/github.com/eltorocorp/drygopher"
 
     docker.image("golang:1.10").inside("-v ${pwd()}:${goPath} -u root") {
         try {
