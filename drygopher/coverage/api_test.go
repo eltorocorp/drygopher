@@ -5,7 +5,8 @@ import (
 	"testing"
 
 	"github.com/eltorocorp/drygopher/drygopher/coverage"
-	"github.com/eltorocorp/drygopher/drygopher/coverage/coverageerror"
+	"github.com/eltorocorp/drygopher/drygopher/coverage/analysis/analysistypes"
+	"github.com/eltorocorp/drygopher/drygopher/coverage/coverageerrors"
 	"github.com/eltorocorp/drygopher/drygopher/coverage/pckg"
 	"github.com/eltorocorp/drygopher/drygopher/mocks"
 	"github.com/stretchr/testify/assert"
@@ -17,7 +18,7 @@ func Test_AnalyzeUnitTestCoverage_Normally_ReturnsWithoutError(t *testing.T) {
 	packageAPI.On("GetPackages", mock.Anything).Return([]string{}, nil)
 
 	analysisAPI := new(mocks.AnalysisAPI)
-	analysisAPI.On("GetCoverageStatistics", mock.Anything).Return(pckg.Group{}, pckg.Group{}, nil)
+	analysisAPI.On("GetCoverageStatistics", mock.Anything).Return(analysistypes.GetCoverageStatisticsOutput{}, nil)
 
 	profileAPI := new(mocks.ProfileAPI)
 	profileAPI.On("BuildAndSaveCoverageProfile", mock.Anything, mock.Anything).Return(nil)
@@ -43,12 +44,13 @@ func Test_AnalyzeUnitTestCoverage_GetPackagesErrors_ReturnsError(t *testing.T) {
 	err := coverageAPI.AnalyzeUnitTestCoverage([]string{}, 0, false, "profile", true)
 	assert.EqualError(t, err, "test error")
 }
+
 func Test_AnalyzeUnitTestCoverage_GetCoverageStatsReturnError_ReturnsError(t *testing.T) {
 	packageAPI := new(mocks.PackageAPI)
 	packageAPI.On("GetPackages", mock.Anything).Return([]string{}, nil)
 
 	analysisAPI := new(mocks.AnalysisAPI)
-	analysisAPI.On("GetCoverageStatistics", mock.Anything).Return(nil, nil, errors.New("test error"))
+	analysisAPI.On("GetCoverageStatistics", mock.Anything).Return(analysistypes.GetCoverageStatisticsOutput{}, errors.New("test error"))
 
 	profileAPI := new(mocks.ProfileAPI)
 	reportAPI := new(mocks.ReportAPI)
@@ -63,15 +65,19 @@ func Test_AnalyzeTestCoverage_CoverageBelowStandard_ReturnsCoverageError(t *test
 	packageAPI.On("GetPackages", mock.Anything).Return([]string{}, nil)
 
 	analysisAPI := new(mocks.AnalysisAPI)
-	testedPackageStats := pckg.Group{
-		&pckg.Stats{
-			Covered:    0,
-			Estimated:  false,
-			Statements: 1,
-			Uncovered:  1,
+
+	getCoverageStatisticsResult := analysistypes.GetCoverageStatisticsOutput{
+		TestedPackageStats: pckg.Group{
+			&pckg.Stats{
+				Covered:    0,
+				Estimated:  false,
+				Statements: 1,
+				Uncovered:  1,
+			},
 		},
 	}
-	analysisAPI.On("GetCoverageStatistics", mock.Anything).Return(testedPackageStats, pckg.Group{}, nil)
+
+	analysisAPI.On("GetCoverageStatistics", mock.Anything).Return(getCoverageStatisticsResult, nil)
 
 	profileAPI := new(mocks.ProfileAPI)
 	profileAPI.On("BuildAndSaveCoverageProfile", mock.Anything, mock.Anything).Return(nil)
@@ -83,7 +89,7 @@ func Test_AnalyzeTestCoverage_CoverageBelowStandard_ReturnsCoverageError(t *test
 
 	err := coverageAPI.AnalyzeUnitTestCoverage([]string{}, 100, false, "profile", true)
 	assert.Error(t, err)
-	assert.IsType(t, coverageerror.CoverageBelowStandard{}, err)
+	assert.IsType(t, coverageerrors.CoverageBelowStandard{}, err)
 }
 
 func Test_AnalyzeTestCoverage_ErrorBuildingCoverageReport_ReturnsError(t *testing.T) {
@@ -91,7 +97,7 @@ func Test_AnalyzeTestCoverage_ErrorBuildingCoverageReport_ReturnsError(t *testin
 	packageAPI.On("GetPackages", mock.Anything).Return([]string{}, nil)
 
 	analysisAPI := new(mocks.AnalysisAPI)
-	analysisAPI.On("GetCoverageStatistics", mock.Anything).Return(pckg.Group{}, pckg.Group{}, nil)
+	analysisAPI.On("GetCoverageStatistics", mock.Anything).Return(analysistypes.GetCoverageStatisticsOutput{}, nil)
 
 	profileAPI := new(mocks.ProfileAPI)
 	profileAPI.On("BuildAndSaveCoverageProfile", mock.Anything, mock.Anything).Return(nil)
@@ -111,7 +117,7 @@ func Test_AnalyzeTestCoverage_ErrorBuildingCoverageProfile_ReturnsError(t *testi
 	packageAPI.On("GetPackages", mock.Anything).Return([]string{}, nil)
 
 	analysisAPI := new(mocks.AnalysisAPI)
-	analysisAPI.On("GetCoverageStatistics", mock.Anything).Return(pckg.Group{}, pckg.Group{}, nil)
+	analysisAPI.On("GetCoverageStatistics", mock.Anything).Return(analysistypes.GetCoverageStatisticsOutput{}, nil)
 
 	reportAPI := new(mocks.ReportAPI)
 	reportAPI.On("BuildCoverageReport", mock.Anything, mock.Anything).Return("", nil)
@@ -131,7 +137,7 @@ func Test_AnalyzeTestCoverage_ErrorOutputingPercentageFile_ReturnsError(t *testi
 	packageAPI.On("GetPackages", mock.Anything).Return([]string{}, nil)
 
 	analysisAPI := new(mocks.AnalysisAPI)
-	analysisAPI.On("GetCoverageStatistics", mock.Anything).Return(pckg.Group{}, pckg.Group{}, nil)
+	analysisAPI.On("GetCoverageStatistics", mock.Anything).Return(analysistypes.GetCoverageStatisticsOutput{}, nil)
 
 	reportAPI := new(mocks.ReportAPI)
 	reportAPI.On("BuildCoverageReport", mock.Anything, mock.Anything).Return("", nil)

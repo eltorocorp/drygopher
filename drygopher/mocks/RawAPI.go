@@ -33,7 +33,7 @@ func (_m *RawAPI) AggregateRawPackageAnalysisData(pkg string, rawPkgCoverageData
 }
 
 // GetRawCoverageAnalysisForPackage provides a mock function with given fields: pkg
-func (_m *RawAPI) GetRawCoverageAnalysisForPackage(pkg string) ([]string, error) {
+func (_m *RawAPI) GetRawCoverageAnalysisForPackage(pkg string) ([]string, bool, error) {
 	ret := _m.Called(pkg)
 
 	var r0 []string
@@ -45,12 +45,19 @@ func (_m *RawAPI) GetRawCoverageAnalysisForPackage(pkg string) ([]string, error)
 		}
 	}
 
-	var r1 error
-	if rf, ok := ret.Get(1).(func(string) error); ok {
+	var r1 bool
+	if rf, ok := ret.Get(1).(func(string) bool); ok {
 		r1 = rf(pkg)
 	} else {
-		r1 = ret.Error(1)
+		r1 = ret.Get(1).(bool)
 	}
 
-	return r0, r1
+	var r2 error
+	if rf, ok := ret.Get(2).(func(string) error); ok {
+		r2 = rf(pkg)
+	} else {
+		r2 = ret.Error(2)
+	}
+
+	return r0, r1, r2
 }

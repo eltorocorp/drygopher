@@ -20,5 +20,5 @@ test:
 	@echo Building mocks...
 	@mockery -output drygopher/mocks -dir drygopher/coverage -all 
 	@echo Ready to test.
-	@drygopher -d -e "/mocks,/interfaces,/cmd,/host,'iface$$','drygopher$$'"
+	@drygopher -d -e "/mocks,/interfaces,/cmd,/host,'iface$$','drygopher$$','types$$'"
 .PHONY: test
