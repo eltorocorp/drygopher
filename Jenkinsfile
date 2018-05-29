@@ -18,7 +18,7 @@ node {
             }
 
             stage("Post-Build") {
-                def coverage = readFile('coveragepct').trim()
+                def coverage = sh(script: "cd ${goPath} && cat coveratepct", returnStdout: true)
                 def coverageUri = "\'http://badges.awsp.eltoro.com?project=drygopher&item=coverage&value=${coverage}&color=yellow\'"
                 sh "echo ${coverageUri}" 
                 sh "curl -sX POST ${coverageUri}"
