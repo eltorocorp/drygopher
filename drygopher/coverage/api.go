@@ -65,7 +65,10 @@ func (a *API) AnalyzeUnitTestCoverage(exclusionPatterns []string, coverageStanda
 	}
 
 	if !suppressPercentageFile {
-		a.profile.OutputPercentageFile(100.0 * actualCoveragePercentage)
+		err = a.profile.OutputPercentageFile(100.0 * actualCoveragePercentage)
+	}
+	if err != nil {
+		return
 	}
 
 	if actualCoveragePercentage*100.0 < coverageStandard {
