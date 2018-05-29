@@ -105,3 +105,44 @@ func Test_AnalyzeTestCoverage_ErrorBuildingCoverageReport_ReturnsError(t *testin
 
 	assert.EqualError(t, err, "test error")
 }
+
+func Test_AnalyzeTestCoverage_ErrorBuildingCoverageProfile_ReturnsError(t *testing.T) {
+	packageAPI := new(mocks.PackageAPI)
+	packageAPI.On("GetPackages", mock.Anything).Return([]string{}, nil)
+
+	analysisAPI := new(mocks.AnalysisAPI)
+	analysisAPI.On("GetCoverageStatistics", mock.Anything).Return(pckg.Group{}, pckg.Group{}, nil)
+
+	reportAPI := new(mocks.ReportAPI)
+	reportAPI.On("BuildCoverageReport", mock.Anything, mock.Anything).Return("", nil)
+
+	profileAPI := new(mocks.ProfileAPI)
+	profileAPI.On("BuildAndSaveCoverageProfile", mock.Anything, mock.Anything).Return(errors.New("test error"))
+
+	coverageAPI := coverage.New(packageAPI, analysisAPI, profileAPI, reportAPI)
+
+	err := coverageAPI.AnalyzeUnitTestCoverage([]string{}, 100, false, "profile", true)
+
+	assert.EqualError(t, err, "test error")
+}
+
+func Test_AnalyzeTestCoverage_ErrorOutputingPercentageFile_ReturnsError(t *testing.T) {
+	packageAPI := new(mocks.PackageAPI)
+	packageAPI.On("GetPackages", mock.Anything).Return([]string{}, nil)
+
+	analysisAPI := new(mocks.AnalysisAPI)
+	analysisAPI.On("GetCoverageStatistics", mock.Anything).Return(pckg.Group{}, pckg.Group{}, nil)
+
+	reportAPI := new(mocks.ReportAPI)
+	reportAPI.On("BuildCoverageReport", mock.Anything, mock.Anything).Return("", nil)
+
+	profileAPI := new(mocks.ProfileAPI)
+	profileAPI.On("BuildAndSaveCoverageProfile", mock.Anything, mock.Anything).Return(nil)
+	profileAPI.On("OutputPercentageFile", mock.Anything).Return(errors.New("test error"))
+
+	coverageAPI := coverage.New(packageAPI, analysisAPI, profileAPI, reportAPI)
+
+	err := coverageAPI.AnalyzeUnitTestCoverage([]string{}, 100, false, "profile", false)
+
+	assert.EqualError(t, err, "test error")
+}

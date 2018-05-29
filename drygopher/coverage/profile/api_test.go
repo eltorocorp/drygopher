@@ -2,6 +2,8 @@ package profile_test
 
 import (
 	"errors"
+	"fmt"
+	"os"
 	"testing"
 
 	"github.com/stretchr/testify/mock"
@@ -45,4 +47,20 @@ func Test_BuildAndSaveCoverageProfile_ErrorGettingFileNames_ReturnsError(t *test
 	err := profileAPI.BuildAndSaveCoverageProfile(group, "coverage.out")
 
 	assert.EqualError(t, err, "test error")
+}
+
+func Test_OutputPercentageFile_Normally_WritesCorrectlyToFile(t *testing.T) {
+	packageAPI := new(mocks.PackageAPI)
+	osioAPI := new(mocks.OSIOAPI)
+	osioAPI.On("WriteFile", mock.Anything, mock.Anything, mock.Anything).Return(nil)
+	profileAPI := profile.New(packageAPI, osioAPI)
+	suppliedPercentage := 12.3
+
+	err := profileAPI.OutputPercentageFile(suppliedPercentage)
+
+	expectedFileName := "coveragepct"
+	expectedFilePermissions := os.ModePerm
+	expectedPercentage := []byte(fmt.Sprintf("%.2f", suppliedPercentage))
+	assert.NoError(t, err)
+	osioAPI.AssertCalled(t, "WriteFile", expectedFileName, expectedPercentage, expectedFilePermissions)
 }
