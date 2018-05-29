@@ -152,3 +152,60 @@ func Test_AnalyzeTestCoverage_ErrorOutputingPercentageFile_ReturnsError(t *testi
 
 	assert.EqualError(t, err, "test error")
 }
+
+func Test_AnalyzeUnitTestCoverage_UnitTestError_ReturnsError(t *testing.T) {
+	packageAPI := new(mocks.PackageAPI)
+	packageAPI.On("GetPackages", mock.Anything).Return([]string{}, nil)
+
+	analysisAPI := new(mocks.AnalysisAPI)
+	getCoverageStatisticsResult := analysistypes.GetCoverageStatisticsOutput{
+		TestFailuresEncountered: true,
+	}
+	analysisAPI.On("GetCoverageStatistics", mock.Anything).Return(getCoverageStatisticsResult, nil)
+
+	profileAPI := new(mocks.ProfileAPI)
+	profileAPI.On("BuildAndSaveCoverageProfile", mock.Anything, mock.Anything).Return(nil)
+
+	reportAPI := new(mocks.ReportAPI)
+	reportAPI.On("BuildCoverageReport", mock.Anything, mock.Anything).Return("", nil)
+
+	coverageAPI := coverage.New(packageAPI, analysisAPI, profileAPI, reportAPI)
+
+	err := coverageAPI.AnalyzeUnitTestCoverage([]string{}, 0, false, "profile", true)
+
+	assert.EqualError(t, err, coverageerrors.NewUnitTestFailedError().Error())
+}
+
+func Test_AnalyzeUnitTestCoverage_UnitTestError_SupersedesCoverageError(t *testing.T) {
+	packageAPI := new(mocks.PackageAPI)
+	packageAPI.On("GetPackages", mock.Anything).Return([]string{}, nil)
+
+	analysisAPI := new(mocks.AnalysisAPI)
+
+	getCoverageStatisticsResult := analysistypes.GetCoverageStatisticsOutput{
+		TestedPackageStats: pckg.Group{
+			&pckg.Stats{
+				Covered:    0,
+				Estimated:  false,
+				Statements: 1,
+				Uncovered:  1,
+			},
+		},
+		TestFailuresEncountered: true,
+	}
+
+	analysisAPI.On("GetCoverageStatistics", mock.Anything).Return(getCoverageStatisticsResult, nil)
+
+	profileAPI := new(mocks.ProfileAPI)
+	profileAPI.On("BuildAndSaveCoverageProfile", mock.Anything, mock.Anything).Return(nil)
+
+	reportAPI := new(mocks.ReportAPI)
+	reportAPI.On("BuildCoverageReport", mock.Anything, mock.Anything).Return("", nil)
+
+	coverageAPI := coverage.New(packageAPI, analysisAPI, profileAPI, reportAPI)
+
+	err := coverageAPI.AnalyzeUnitTestCoverage([]string{}, 100, false, "profile", true)
+
+	assert.Error(t, err)
+	assert.IsType(t, coverageerrors.UnitTestFailed{}, err)
+}

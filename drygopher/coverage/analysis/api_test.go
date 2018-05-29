@@ -34,6 +34,32 @@ func Test_GetCoverageStatistics_Normally_ReturnsStats(t *testing.T) {
 	assert.Len(t, result.TestedPackageStats, 1)
 	assert.Len(t, result.UntestedPackageStats, 1)
 	assert.NoError(t, err)
+	assert.False(t, result.TestFailuresEncountered)
+	rawAPI.AssertExpectations(t)
+}
+
+func Test_GetCoverageStatistics_UnitTestFailed_ReturnsTrue(t *testing.T) {
+	rawAPI := new(mocks.RawAPI)
+
+	rawPackageData := []string{"testedpkg:0.0,0.0 0 0"}
+	rawAPI.On("GetRawCoverageAnalysisForPackage", mock.Anything).
+		Return(rawPackageData, false, nil).
+		Once()
+
+	rawAPI.On("GetRawCoverageAnalysisForPackage", mock.Anything).
+		Return([]string{}, true, nil).
+		Once()
+
+	rawAPI.On("AggregateRawPackageAnalysisData", mock.Anything, mock.Anything).
+		Once().
+		Return(&pckg.Stats{}, nil)
+
+	analysisAPI := analysis.New(rawAPI)
+	result, err := analysisAPI.GetCoverageStatistics([]string{"testedpkg", "untestedpkg"})
+	assert.Len(t, result.TestedPackageStats, 1)
+	assert.Len(t, result.UntestedPackageStats, 1)
+	assert.True(t, result.TestFailuresEncountered)
+	assert.NoError(t, err)
 	rawAPI.AssertExpectations(t)
 }
 

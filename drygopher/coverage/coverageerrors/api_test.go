@@ -11,3 +11,8 @@ func Test_CoverageBelowStandard_Error_Normally_ReturnsErrorMessage(t *testing.T)
 	err := coverageerrors.NewCoverageBelowStandardError(98.3, 50.5)
 	assert.EqualError(t, err, "coverage of 50.50% is below the standard of 98.30%")
 }
+
+func Test_UnitTestFailed_Error_Normally_ReturnsErrorMessage(t *testing.T) {
+	err := coverageerrors.NewUnitTestFailedError()
+	assert.EqualError(t, err, "One or more unit tests failed while conducting coverage analysis.")
+}
