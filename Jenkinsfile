@@ -27,6 +27,7 @@ node {
                 currentBuild.result = 'SUCCESS'
             }
         } catch (Exception err) {
+            sh "echo ${err}"
             sh "curl -sX POST 'http://badges.awsp.eltoro.com?project=drygopher&item=build&value=failing&color=red'"
             currentBuild.result = 'FAILURE'
         }
