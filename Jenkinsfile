@@ -19,7 +19,8 @@ node {
 
             stage("Post-Build") {
                 def coverage = readFile('coveragepct').trim()
-                def coverageUri = "\'http://badges.awsp.eltoro.com?project=drygopher&item=coverage&value=${coverage}&color=yellow\'" 
+                def coverageUri = "\'http://badges.awsp.eltoro.com?project=drygopher&item=coverage&value=${coverage}&color=yellow\'"
+                sh "echo ${coverageUri}" 
                 sh "curl -sX POST ${coverageUri}"
                 sh "curl -sX POST 'http://badges.awsp.eltoro.com?project=drygopher&item=build&value=passing&color=green'"
                 currentBuild.result = 'SUCCESS'
