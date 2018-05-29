@@ -1,9 +1,9 @@
 
 node {
-    checkout scm
     String goPath = "/go/src/github.com/eltorocorp/drygopher"
     docker.image("golang:1.10").inside("-v ${pwd()}:${goPath} -u root") {
         try {
+            checkout scm
             stage('Pre-Build') {
                 sh "curl -sX POST 'http://badges.awsp.eltoro.com?project=drygopher&item=build&value=pending&color=blue'"
                 sh "cd ${goPath} && make prebuild"
