@@ -1,7 +1,7 @@
 
 node {
     String goPath = "/go/src/github.com/eltorocorp/drygopher"
-            checkout([$class: 'GitSCM', branches: [[name: '*/master']], doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], userRemoteConfigs: [[credentialsId: '7ceeda43-100f-4758-9e04-a9d3147cf68c', url: 'git@github.com:eltorocorp/drygopher.git']]])
+            checkout([$class: 'GitSCM', branches: [[name: '*/master']], doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], userRemoteConfigs: [[credentialsId: 'c01e62dd-e191-42c0-8b86-bbbef49c0292', url: 'git@github.com:eltorocorp/drygopher.git']]])
     docker.image("golang:1.10").inside("-v ${pwd()}:${goPath} -u root") {
         try {
 
