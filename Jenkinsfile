@@ -6,6 +6,7 @@ node {
         try {
             stage('Pre-Build') {
                 sh "curl -sX POST 'http://badges.awsp.eltoro.com?project=drygopher&item=build&value=pending&color=blue'"
+                checkout scm
                 sh "cd ${goPath} && make prebuild"
             }
 
