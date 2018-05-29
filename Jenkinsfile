@@ -1,18 +1,18 @@
 
+def setCoverageBadge() {
+    def coverage = sh(script: "cd ${goPath} && cat coveragepct", returnStdout: true)
+    def coverageUri = "\'http://badges.awsp.eltoro.com?project=drygopher&item=coverage&value=${coverage}&color=yellow\'"
+    sh "curl -sX POST ${coverageUri}"
+}
+
+def setBuildStatusBadge(status, color) {
+    def statusUri = "\'http://badges.awsp.eltoro.com?project=drygopher&item=build&value=${status}&color=${color}\'"
+    sh "curl -sX POST ${statusUri}"
+}
+
 node {
     String goPath = "/go/src/github.com/eltorocorp/drygopher"
     docker.image("golang:1.10").inside("-v ${pwd()}:${goPath} -u root") {
-        def setCoverageBadge() {
-            def coverage = sh(script: "cd ${goPath} && cat coveragepct", returnStdout: true)
-            def coverageUri = "\'http://badges.awsp.eltoro.com?project=drygopher&item=coverage&value=${coverage}&color=yellow\'"
-            sh "curl -sX POST ${coverageUri}"
-        }
-
-        def setBuildStatusBadge(status, color) {
-            def statusUri = "\'http://badges.awsp.eltoro.com?project=drygopher&item=build&value=${status}&color=${color}\'"
-            sh "curl -sX POST ${statusUri}"
-        }
-
         try {
             stage('Pre-Build') {
                 setBuildStatusBadge('pending', 'blue')
