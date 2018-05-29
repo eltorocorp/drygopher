@@ -3,7 +3,7 @@ node {
     String goPath = "/go/src/github.com/eltorocorp/drygopher"
     docker.image("golang:1.10").inside("-v ${pwd()}:${goPath} -u root") {
         try {
-            checkout([$class: 'GitSCM', branches: [[name: '*/master']], doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], userRemoteConfigs: [[credentialsId: '7ceeda43-100f-4758-9e04-a9d3147cf68c', url: 'git@github.com:eltorocorp/drygopher.git']]])
+            checkout([$class: 'GitSCM', branches: [[name: 'refs/heads/master']], doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], userRemoteConfigs: [[credentialsId: '7ceeda43-100f-4758-9e04-a9d3147cf68c', url: 'git@github.com:eltorocorp/drygopher.git']]])
 
             stage('Pre-Build') {
                 sh "curl -sX POST 'http://badges.awsp.eltoro.com?project=drygopher&item=build&value=pending&color=blue'"
