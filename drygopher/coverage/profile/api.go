@@ -1,3 +1,4 @@
+// Package profile exposes methods for working with coverage profile files and other profile related files.
 package profile
 
 import (

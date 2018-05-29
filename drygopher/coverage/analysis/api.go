@@ -1,3 +1,4 @@
+// Package analysis contains methods for building coverage statistics.
 package analysis
 
 import (

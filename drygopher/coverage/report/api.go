@@ -1,3 +1,4 @@
+// Package report exposes methods for generating a coverage report.
 package report
 
 import (

@@ -1,3 +1,4 @@
+// Package cmd is responsible for the CLI's user interface.
 package cmd
 
 import (

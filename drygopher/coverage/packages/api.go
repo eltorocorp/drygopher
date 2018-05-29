@@ -1,3 +1,4 @@
+// Package packages exposes methods for listing packages URIs, filenames, etc...
 package packages
 
 import (

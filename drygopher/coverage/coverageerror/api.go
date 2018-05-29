@@ -1,3 +1,4 @@
+// Package coverageerror contains error types specific to coverage analysis.
 package coverageerror
 
 import "fmt"

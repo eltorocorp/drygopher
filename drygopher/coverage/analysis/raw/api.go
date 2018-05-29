@@ -1,3 +1,4 @@
+// Package raw exposes lower level methods that interact with the 'go' CLI.
 package raw
 
 import (

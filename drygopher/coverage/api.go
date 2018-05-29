@@ -1,3 +1,4 @@
+// Package coverage contains an API for working with unit test coverage analysis.
 package coverage
 
 import (
