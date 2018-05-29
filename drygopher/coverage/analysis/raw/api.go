@@ -26,27 +26,46 @@ func New(osioAPI hostiface.OSIOAPI, execAPI hostiface.ExecAPI) *API {
 	}
 }
 
-// GetRawCoverageAnalysisForPackage shells out a go test command and returns the
-// raw data from the resulting coverage profile.
-func (a *API) GetRawCoverageAnalysisForPackage(pkg string) ([]string, error) {
+// GetRawCoverageAnalysisForPackage shells out a go test command and returns
+// three values:
+// - The raw coverage results for the package
+// - Whether or not the package's unit tests failed.
+// - An error, should one have occurred during processing.
+func (a *API) GetRawCoverageAnalysisForPackage(pkg string) ([]string, bool, error) {
 	covermode := "count"
 	analyzeCmdText := "go test -covermode=%v -coverprofile=tmp.out %v"
 	analyzeCmdText = fmt.Sprintf(analyzeCmdText, covermode, pkg)
 	analyzeCoverageCmd := a.execAPI.Command("sh", "-c", analyzeCmdText)
-	var result []byte
-	result, err := analyzeCoverageCmd.Output()
-	if err != nil {
-		log.Println("Error issuing command to analyze package.")
-		log.Println(analyzeCmdText)
-		log.Println(err)
-		return nil, err
+
+	resultBytes, err := analyzeCoverageCmd.Output()
+	result := string(resultBytes)
+
+	// analyzeCoverageCmd.Output() will return an error when a test failes.
+	// We check for this situation first, as, in this case, we will
+	// disregard the error and instead process the test failure.
+	if strings.Contains(result, "FAIL:") {
+		log.Printf("---> Failed test: %v\n", result)
+		rawResult, err := a.retrieveResultsFromTmpFile(result)
+		return rawResult, true, err
 	}
+
+	// If we're here, and there is an error, we know the error didn't result from
+	// a failed unit test. So we bubble the error up.
+	if err != nil {
+		return nil, false, err
+	}
+
 	log.Printf("---> Package result: %v", string(result))
+	rawResult, err := a.retrieveResultsFromTmpFile(result)
+	return rawResult, false, err
+}
+
+func (a *API) retrieveResultsFromTmpFile(result string) ([]string, error) {
 	if result[0] == '?' {
 		return []string{}, nil
 	}
 	var tmpOut []byte
-	tmpOut, err = a.osioAPI.ReadFile("tmp.out")
+	tmpOut, err := a.osioAPI.ReadFile("tmp.out")
 	if err != nil {
 		return nil, err
 	}

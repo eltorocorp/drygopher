@@ -5,9 +5,10 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/eltorocorp/drygopher/drygopher/coverage/coverageerror"
+	"github.com/eltorocorp/drygopher/drygopher/coverage/analysis/analysistypes"
+
+	"github.com/eltorocorp/drygopher/drygopher/coverage/coverageerrors"
 	"github.com/eltorocorp/drygopher/drygopher/coverage/interfaces"
-	"github.com/eltorocorp/drygopher/drygopher/coverage/pckg"
 )
 
 // API contains methods for analyzing unit test coverage.
@@ -32,9 +33,8 @@ func New(packageAPI interfaces.PackageAPI, analysisAPI interfaces.AnalysisAPI, p
 func (a *API) AnalyzeUnitTestCoverage(exclusionPatterns []string, coverageStandard float64, suppressProfile bool, coverageProfileName string, suppressPercentageFile bool) (err error) {
 	log.Println("Analyzing unit test coverage...")
 	var (
-		packages             []string
-		testedPackageStats   pckg.Group
-		untestedPackageStats pckg.Group
+		packages      []string
+		coverageStats analysistypes.GetCoverageStatisticsOutput
 	)
 
 	packages, err = a.packages.GetPackages(exclusionPatterns)
@@ -42,13 +42,13 @@ func (a *API) AnalyzeUnitTestCoverage(exclusionPatterns []string, coverageStanda
 		return
 	}
 
-	testedPackageStats, untestedPackageStats, err = a.analysis.GetCoverageStatistics(packages)
+	coverageStats, err = a.analysis.GetCoverageStatistics(packages)
 	if err != nil {
 		return
 	}
 
-	untestedPackageStats.SetEstimatedStmtCountFrom(testedPackageStats)
-	allPackages := append(testedPackageStats, untestedPackageStats...)
+	coverageStats.UntestedPackageStats.SetEstimatedStmtCountFrom(coverageStats.TestedPackageStats)
+	allPackages := append(coverageStats.TestedPackageStats, coverageStats.UntestedPackageStats...)
 	actualCoveragePercentage := allPackages.CoveragePercent()
 
 	var report string
@@ -73,7 +73,14 @@ func (a *API) AnalyzeUnitTestCoverage(exclusionPatterns []string, coverageStanda
 	}
 
 	if actualCoveragePercentage*100.0 < coverageStandard {
-		err = coverageerror.New(coverageStandard, 100.0*actualCoveragePercentage)
+		err = coverageerrors.NewCoverageBelowStandardError(coverageStandard, 100.0*actualCoveragePercentage)
 	}
+
+	// A TestFailuresEncountered error is allowed to overwrite (supersede) a
+	// CoverageBelowStandardError
+	if coverageStats.TestFailuresEncountered {
+		err = coverageerrors.NewUnitTestFailedError()
+	}
+
 	return
 }

@@ -1,4 +1,4 @@
-package coverageerror_test
+package coverageerrors_test
 
 import (
 	"testing"

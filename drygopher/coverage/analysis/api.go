@@ -5,6 +5,7 @@ import (
 	"log"
 	"strings"
 
+	"github.com/eltorocorp/drygopher/drygopher/coverage/analysis/analysistypes"
 	"github.com/eltorocorp/drygopher/drygopher/coverage/analysis/interfaces"
 	"github.com/eltorocorp/drygopher/drygopher/coverage/pckg"
 )
@@ -22,18 +23,26 @@ func New(rawAPI interfaces.RawAPI) *API {
 }
 
 // GetCoverageStatistics gathers and returns coverage statistics for the specified packages.
-func (a *API) GetCoverageStatistics(packages []string) (testedPackageStats, untestedPackageStats pckg.Group, err error) {
+func (a *API) GetCoverageStatistics(packages []string) (result analysistypes.GetCoverageStatisticsOutput, err error) {
 	log.Println("Aggregating packages stats...")
 
+	var testedPackageStats pckg.Group
+	var untestedPackageStats pckg.Group
+	testFailuresEncountered := false
 	for _, pkg := range packages {
 		if len(strings.TrimSpace(pkg)) == 0 {
 			continue
 		}
 
+		failedTest := false
 		var rawPkgCoverageData []string
-		rawPkgCoverageData, err = a.raw.GetRawCoverageAnalysisForPackage(pkg)
+		rawPkgCoverageData, failedTest, err = a.raw.GetRawCoverageAnalysisForPackage(pkg)
 		if err != nil {
 			return
+		}
+
+		if failedTest == true {
+			testFailuresEncountered = true
 		}
 
 		if len(rawPkgCoverageData) == 0 {
@@ -51,5 +60,9 @@ func (a *API) GetCoverageStatistics(packages []string) (testedPackageStats, unte
 		}
 		testedPackageStats = append(testedPackageStats, packageStats)
 	}
+
+	result.TestedPackageStats = testedPackageStats
+	result.UntestedPackageStats = untestedPackageStats
+	result.TestFailuresEncountered = testFailuresEncountered
 	return
 }
