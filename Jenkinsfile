@@ -25,5 +25,7 @@ node {
             sh "curl -sX POST 'http://badges.awsp.eltoro.com?project=drygopher&item=build&value=failing&color=red'"
             currentBuild.result = 'FAILURE'
         }
+
+        sh "curl -sX POST 'http://badges.awsp.eltoro.com?project=drygopher&item=coverage&value=$(cat coverage)&color=yellow'"
     }
 }
