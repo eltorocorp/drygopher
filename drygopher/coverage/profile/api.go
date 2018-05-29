@@ -2,6 +2,7 @@ package profile
 
 import (
 	"fmt"
+	"log"
 	"os"
 	"sort"
 	"strings"
@@ -54,5 +55,6 @@ func (a *API) OutputPercentageFile(coveragePercentage float64) error {
 func (a *API) saveCoverageProfile(fileName string, rawData []string) error {
 	sort.StringSlice(rawData).Sort()
 	profile := "mode: count\n" + strings.TrimSpace(strings.Join(rawData, "\n"))
+	log.Println("Writing coverage percentage to 'coveragepct' file.")
 	return a.osioAPI.WriteFile(fileName, []byte(profile), os.ModePerm)
 }
