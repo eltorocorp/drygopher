@@ -54,6 +54,6 @@ func (a *API) OutputPercentageFile(coveragePercentage float64) error {
 // SaveCoverageProfile saves the supplied raw data to the desired file.
 func (a *API) saveCoverageProfile(fileName string, rawData []string) error {
 	sort.StringSlice(rawData).Sort()
-	profile := "mode: count\n" + strings.TrimSpace(strings.Join(rawData, "\n"))
+	profile := "mode: atomic\n" + strings.TrimSpace(strings.Join(rawData, "\n"))
 	return a.osioAPI.WriteFile(fileName, []byte(profile), os.ModePerm)
 }

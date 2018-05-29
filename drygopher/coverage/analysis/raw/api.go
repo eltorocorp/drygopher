@@ -32,8 +32,8 @@ func New(osioAPI hostiface.OSIOAPI, execAPI hostiface.ExecAPI) *API {
 // - Whether or not the package's unit tests failed.
 // - An error, should one have occurred during processing.
 func (a *API) GetRawCoverageAnalysisForPackage(pkg string) ([]string, bool, error) {
-	covermode := "count"
-	analyzeCmdText := "go test -covermode=%v -coverprofile=tmp.out %v"
+	covermode := "atomic"
+	analyzeCmdText := "go test -race -covermode=%v -coverprofile=tmp.out %v"
 	analyzeCmdText = fmt.Sprintf(analyzeCmdText, covermode, pkg)
 	analyzeCoverageCmd := a.execAPI.Command("sh", "-c", analyzeCmdText)
 
