@@ -13,12 +13,11 @@ def setBuildStatusBadge(status, color) {
 node {
     String goPath = "/go/src/github.com/eltorocorp/drygopher"
     docker.image("golang:1.10").inside("-v ${pwd()}:${goPath} -u root") {
-
         try {
             stage('Pre-Build') {
                 setBuildStatusBadge('pending', 'blue')
                 sh "chmod -R 0777 ${goPath}"
-                checkout([$class: 'GitSCM', branches: [[name: '*/master']], doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], userRemoteConfigs: [[credentialsId: 'c01e62dd-e191-42c0-8b86-bbbef49c0292', url: 'git@github.com:eltorocorp/drygopher.git']]])
+                checkout scm
                 sh "cd ${goPath} && make prebuild"
             }
 
