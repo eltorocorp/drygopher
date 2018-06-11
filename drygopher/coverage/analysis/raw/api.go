@@ -33,7 +33,9 @@ func New(osioAPI hostiface.OSIOAPI, execAPI hostiface.ExecAPI) *API {
 // - An error, should one have occurred during processing.
 func (a *API) GetRawCoverageAnalysisForPackage(pkg string) ([]string, bool, error) {
 	covermode := "atomic"
-	analyzeCmdText := "go test -race -covermode=%v -coverprofile=tmp.out %v"
+	// the use of -count=1 is important, as it prevents go test from attempting
+	// to use cached test results (which are not supported by drygopher)
+	analyzeCmdText := "go test -count=1 -race -covermode=%v -coverprofile=tmp.out %v"
 	analyzeCmdText = fmt.Sprintf(analyzeCmdText, covermode, pkg)
 	analyzeCoverageCmd := a.execAPI.Command("sh", "-c", analyzeCmdText)
 
