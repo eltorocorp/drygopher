@@ -10,11 +10,16 @@ def setBuildStatusBadge(status, color) {
     sh "curl -sX POST ${statusUri}"
 }
 
+def slack(slack_message) {
+    slackSend channel: '#dev-badass-badgers', message: "${slack_message}", failOnError:true, tokenCredentialId: 'slack-token'
+}
+
 node {
     String goPath = "/go/src/github.com/eltorocorp/drygopher"
     docker.image("golang:1.10").inside("-v ${pwd()}:${goPath} -u root") {
         try {
             stage('Pre-Build') {
+                slack('test message')
                 setBuildStatusBadge('pending', 'blue')
                 sh "chmod -R 0777 ${goPath}"
                 checkout scm
