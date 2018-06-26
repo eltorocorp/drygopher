@@ -10,9 +10,16 @@ def setBuildStatusBadge(status, color) {
     sh "curl -sX POST ${statusUri}"
 }
 
-def slack(slack_message, message_color) {
-    slackSend channel: '#dev-badass-badgers', message: "${slack_message}", failOnError:true, tokenCredentialId: 'slack-token', color:"${message_color}"
+def slackSuccess() {
+    def slack_message = "drygopher build succeeded!"
+    slackSend channel: '#dev-badass-badgers', message: "${slack_message}", failOnError:true, tokenCredentialId: 'slack-token', color:"danger"
 }
+
+def slackFailure(){
+    def slack_message = "drygopher build failed! Details: ${BUILD_URL}"
+    slackSend channel: '#dev-badass-badgers', message: "${slack_message}", failOnError:true, tokenCredentialId: 'slack-token', color:"good"
+}
+
 
 node {
     String goPath = "/go/src/github.com/eltorocorp/drygopher"
@@ -35,15 +42,15 @@ node {
 
             stage("Post-Build") {
                 setBuildStatusBadge('passing', 'green')
+                slackSuccess()
                 currentBuild.result = 'SUCCESS'
             }
         } catch (Exception err) {
             sh "echo ${err}"
-            slack("Drygopher build failed. ${env.BUILD_URL}", "#FF0000")
+            slackFailure()
             setBuildStatusBadge('failing', 'red')
             currentBuild.result = 'FAILURE'
         } finally {
-            slack("<a href=${env.BUILD_URL}>Drygopher build succeeded.</a>", "good")
             setCoverageBadge(goPath)
         }
     }
