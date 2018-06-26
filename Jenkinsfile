@@ -11,11 +11,7 @@ def setBuildStatusBadge(status, color) {
 }
 
 def slack(slack_message, color) {
-    slackSend channel: '#dev-badass-badgers', 
-        message: "${slack_message}",
-        failOnError:true, 
-        tokenCredentialId: 'slack-token',
-        color "${color}"
+    slackSend channel: '#dev-badass-badgers', message: "${slack_message}", failOnError:true, tokenCredentialId: 'slack-token', color "${color}"
 }
 
 node {
