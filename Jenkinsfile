@@ -43,6 +43,7 @@ node {
             setBuildStatusBadge('failing', 'red')
             currentBuild.result = 'FAILURE'
         } finally {
+            slack("New-mover build succeeded. ${env.BUILD_URL}", "good")
             setCoverageBadge(goPath)
         }
     }
