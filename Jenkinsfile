@@ -10,8 +10,13 @@ def setBuildStatusBadge(status, color) {
     sh "curl -sX POST ${statusUri}"
 }
 
-def slack(slack_message) {
-    slackSend channel: '#dev-badass-badgers', message: "${slack_message}", failOnError:true, tokenCredentialId: 'slack-token'
+def slack(slack_message, color) {
+    slackSend 
+        channel: '#dev-badass-badgers', 
+        message: "${slack_message}",
+        failOnError:true, 
+        tokenCredentialId: 'slack-token',
+        color "${color}"
 }
 
 node {
@@ -19,7 +24,6 @@ node {
     docker.image("golang:1.10").inside("-v ${pwd()}:${goPath} -u root") {
         try {
             stage('Pre-Build') {
-                slack('test message')
                 setBuildStatusBadge('pending', 'blue')
                 sh "chmod -R 0777 ${goPath}"
                 checkout scm
@@ -40,6 +44,7 @@ node {
             }
         } catch (Exception err) {
             sh "echo ${err}"
+            slack("New-mover build failed. ${env.BUILD_URL}", #FF0000)
             setBuildStatusBadge('failing', 'red')
             currentBuild.result = 'FAILURE'
         } finally {
