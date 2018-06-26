@@ -10,8 +10,8 @@ def setBuildStatusBadge(status, color) {
     sh "curl -sX POST ${statusUri}"
 }
 
-def slack(slack_message, color) {
-    slackSend channel: '#dev-badass-badgers', message: "${slack_message}", failOnError:true, tokenCredentialId: 'slack-token', color "${color}"
+def slack(slack_message, message_color) {
+    slackSend channel: '#dev-badass-badgers', message: "${slack_message}", failOnError:true, tokenCredentialId: 'slack-token', color:"${message_color}"
 }
 
 node {
