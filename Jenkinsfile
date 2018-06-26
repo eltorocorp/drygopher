@@ -39,7 +39,7 @@ node {
             }
         } catch (Exception err) {
             sh "echo ${err}"
-            slack("New-mover build failed. ${env.BUILD_URL}", #FF0000)
+            slack("New-mover build failed. ${env.BUILD_URL}", "#FF0000")
             setBuildStatusBadge('failing', 'red')
             currentBuild.result = 'FAILURE'
         } finally {
