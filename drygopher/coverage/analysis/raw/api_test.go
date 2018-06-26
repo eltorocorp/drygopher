@@ -121,8 +121,30 @@ func Test_AggregateRawPackageAnalysisData_Normally_AggregatesWithoutError(t *tes
 
 	rawAPI := raw.New(osioAPI, execAPI)
 	rawData := []string{
-		"mode: count",
 		"somepackage:0.0,0.0 1 0",
+	}
+	stats, err := rawAPI.AggregateRawPackageAnalysisData("somepackage", rawData)
+	expectedStats := pckg.Stats{
+		Covered:         0,
+		Estimated:       false,
+		Package:         "somepackage",
+		RawCoverageData: rawData,
+		Statements:      1,
+		Uncovered:       1,
+	}
+	assert.Equal(t, expectedStats, *stats)
+	assert.NoError(t, err)
+}
+
+func Test_AggregateRawPackageAnalysisData_ContainsBlankLines_AggregatesWithoutError(t *testing.T) {
+	osioAPI := new(mocks.OSIOAPI)
+	execAPI := new(mocks.ExecAPI)
+
+	rawAPI := raw.New(osioAPI, execAPI)
+	rawData := []string{
+		"",
+		"somepackage:0.0,0.0 1 0",
+		"",
 	}
 	stats, err := rawAPI.AggregateRawPackageAnalysisData("somepackage", rawData)
 	expectedStats := pckg.Stats{
@@ -146,8 +168,8 @@ func Test_AggregateRawPackageAnalysisData_ErrorParsing_ReturnsError(t *testing.T
 		name    string
 		rawData []string
 	}{
-		{name: "badCallCount", rawData: []string{"mode: count", "somepackage:0.0,0.0 0 X"}},
-		{name: "badStmtCount", rawData: []string{"mode: count", "somepackage:0.0,0.0 X 0"}},
+		{name: "badCallCount", rawData: []string{"somepackage:0.0,0.0 0 X"}},
+		{name: "badStmtCount", rawData: []string{"somepackage:0.0,0.0 X 0"}},
 	}
 
 	for _, tc := range testCases {
@@ -166,7 +188,6 @@ func Test_AggregateRawPackageAnalysisData_CallsPresent_TotalCoveredEqualsCallCou
 
 	rawAPI := raw.New(osioAPI, execAPI)
 	rawData := []string{
-		"mode: count",
 		"somepackage:0.0,0.0 5 1",
 	}
 	stats, err := rawAPI.AggregateRawPackageAnalysisData("somepackage", rawData)

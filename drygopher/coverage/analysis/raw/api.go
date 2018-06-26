@@ -84,8 +84,8 @@ func (a *API) retrieveResultsFromTmpFile(result string) ([]string, error) {
 func (a *API) AggregateRawPackageAnalysisData(pkg string, rawPkgCoverageData []string) (*pckg.Stats, error) {
 	totalStatementCount := 0.0
 	totalCoveredCount := 0.0
-	for line, coverageReportItem := range rawPkgCoverageData {
-		if line == 0 || coverageReportItem == "" {
+	for _, coverageReportItem := range rawPkgCoverageData {
+		if coverageReportItem == "" {
 			continue
 		}
 

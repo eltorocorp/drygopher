@@ -4,3 +4,4 @@ Gopkg.lock
 *.out
 *.test
 coveragepct
+debug
