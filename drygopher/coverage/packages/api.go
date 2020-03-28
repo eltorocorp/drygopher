@@ -3,7 +3,6 @@ package packages
 
 import (
 	"fmt"
-	"go/build"
 	"log"
 	"path/filepath"
 	"strings"
@@ -47,7 +46,6 @@ func (a *API) GetPackages(exclusionPatterns []string) (packages []string, err er
 
 // GetFileNamesForPackage returns a list package URIs with associated filenames.
 func (a *API) GetFileNamesForPackage(pkg string) ([]string, error) {
-	fmt.Println("!!!", build.Default.GOPATH)
 	gopath := a.osioAPI.GetGoPath()
 	packagePath := gopath + "/src/" + pkg
 	files, err := a.osioAPI.ReadDir(packagePath)
