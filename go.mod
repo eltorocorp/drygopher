@@ -12,6 +12,10 @@ require (
 	github.com/gonum/stat v0.0.0-20181125101827-41a0da705a5b
 	github.com/mitchellh/go-wordwrap v1.0.0
 	github.com/spf13/cobra v0.0.7
+	github.com/stretchr/objx v0.2.0 // indirect
 	github.com/stretchr/testify v1.5.1
+	github.com/vektra/mockery v0.0.0-20181123154057-e78b021dcbb5 // indirect
 	github.com/willf/pad v0.0.0-20200313202418-172aa767f2a4
+	golang.org/x/tools v0.0.0-20200327195553-82bb89366a1e // indirect
+	gopkg.in/yaml.v2 v2.2.8 // indirect
 )
