@@ -13,25 +13,18 @@ type OSIOAPI struct {
 	mock.Mock
 }
 
-// LookupEnv provides a mock function with given fields: key
-func (_m *OSIOAPI) LookupEnv(key string) (string, bool) {
-	ret := _m.Called(key)
+// GetGoPath provides a mock function with given fields:
+func (_m *OSIOAPI) GetGoPath() string {
+	ret := _m.Called()
 
 	var r0 string
-	if rf, ok := ret.Get(0).(func(string) string); ok {
-		r0 = rf(key)
+	if rf, ok := ret.Get(0).(func() string); ok {
+		r0 = rf()
 	} else {
 		r0 = ret.Get(0).(string)
 	}
 
-	var r1 bool
-	if rf, ok := ret.Get(1).(func(string) bool); ok {
-		r1 = rf(key)
-	} else {
-		r1 = ret.Get(1).(bool)
-	}
-
-	return r0, r1
+	return r0
 }
 
 // MustRemove provides a mock function with given fields: filename

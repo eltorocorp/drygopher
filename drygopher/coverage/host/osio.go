@@ -1,6 +1,7 @@
 package host
 
 import (
+	"go/build"
 	"io/ioutil"
 	"os"
 
@@ -34,9 +35,9 @@ func (OSIO) ReadDir(dirname string) ([]os.FileInfo, error) {
 	return ioutil.ReadDir(dirname)
 }
 
-//LookupEnv wrapper
-func (OSIO) LookupEnv(key string) (string, bool) {
-	return os.LookupEnv(key)
+//GetGoPath wrapper
+func (OSIO) GetGoPath() string {
+	return build.Default.GOPATH
 }
 
 var _ hostiface.OSIOAPI = (*OSIO)(nil)

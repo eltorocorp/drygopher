@@ -62,7 +62,7 @@ func Test_GetFileNamesForPackage_Normally_ReturnsFileNamesWithoutError(t *testin
 	osioAPI := new(mocks.OSIOAPI)
 	execAPI := new(mocks.ExecAPI)
 
-	osioAPI.On("LookupEnv", mock.Anything).Return("path", true)
+	osioAPI.On("GetGoPath").Return("path")
 	fileInfo := new(mocks.FileInfo)
 	fileInfo.On("Name").Return("filename.go")
 	files := []os.FileInfo{
@@ -78,24 +78,11 @@ func Test_GetFileNamesForPackage_Normally_ReturnsFileNamesWithoutError(t *testin
 	assert.NoError(t, err)
 }
 
-func Test_GetFilesNamesForPackages_NoGOPATH_ReturnsError(t *testing.T) {
-	osioAPI := new(mocks.OSIOAPI)
-	execAPI := new(mocks.ExecAPI)
-
-	osioAPI.On("LookupEnv", mock.Anything).Return("", false)
-
-	packageAPI := packages.New(execAPI, osioAPI)
-	fileNames, err := packageAPI.GetFileNamesForPackage("packagename")
-
-	assert.Nil(t, fileNames)
-	assert.EqualError(t, err, "GOPATH not set")
-}
-
 func Test_GetFileNamesForPackages_ErrorReadingDirectory_ReturnsError(t *testing.T) {
 	osioAPI := new(mocks.OSIOAPI)
 	execAPI := new(mocks.ExecAPI)
 
-	osioAPI.On("LookupEnv", mock.Anything).Return("path", true)
+	osioAPI.On("GetGoPath", mock.Anything).Return("path", true)
 	osioAPI.On("ReadDir", mock.Anything).Return(nil, errors.New("test error"))
 
 	packageAPI := packages.New(execAPI, osioAPI)
