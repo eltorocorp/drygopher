@@ -32,6 +32,9 @@ func New(osioAPI hostiface.OSIOAPI, execAPI hostiface.ExecAPI) *API {
 // - Whether or not the package's unit tests failed.
 // - An error, should one have occurred during processing.
 func (a *API) GetRawCoverageAnalysisForPackage(pkg string) ([]string, bool, error) {
+	defer func() {
+		a.osioAPI.MustRemove("tmp.out")
+	}()
 	covermode := "atomic"
 	// the use of -count=1 is important, as it prevents go test from attempting
 	// to use cached test results (which are not supported by drygopher)
@@ -42,7 +45,7 @@ func (a *API) GetRawCoverageAnalysisForPackage(pkg string) ([]string, bool, erro
 	resultBytes, err := analyzeCoverageCmd.Output()
 	result := string(resultBytes)
 
-	// analyzeCoverageCmd.Output() will return an error when a test failes.
+	// analyzeCoverageCmd.Output() will return an error when a test fails.
 	// We check for this situation first, as, in this case, we will
 	// disregard the error and instead process the test failure.
 	if strings.Contains(result, "FAIL:") {

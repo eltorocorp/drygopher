@@ -17,7 +17,9 @@ test:
 	@rm -drf drygopher/mocks
 	@echo Building mocks...
 	@mockery -output drygopher/mocks -dir drygopher/coverage -all 
+	@echo Clearing old analysis results...
+	@touch coverage.out && rm coverage.out
+	@touch coveragepct && rm coveragepct
 	@echo Ready to test.
-	@(drygopher -d -e "/mocks,/interfaces,/cmd,/host,'iface$$','drygopher$$','types$$'") || (exit 0) && \
-		rm tmp.out > /dev/null 2>&1
+	@drygopher -d -e "/mocks,/interfaces,/cmd,/host,'iface$$','drygopher$$','types$$'"
 .PHONY: test

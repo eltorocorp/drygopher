@@ -21,6 +21,7 @@ func Test_GetRawCoverageAnalysisForPackage_Normally_ReturnsAnalysis(t *testing.T
 
 	profileData := "mode: count\ndata"
 	osioAPI.On("ReadFile", mock.Anything).Return([]byte(profileData), nil)
+	osioAPI.On("MustRemove", mock.Anything)
 
 	rawAPI := raw.New(osioAPI, execAPI)
 	result, testFailed, err := rawAPI.GetRawCoverageAnalysisForPackage("somepkg")
@@ -36,6 +37,7 @@ func Test_GetRawCoverageAnalysisForPackage_TestCmdError_ReturnsError(t *testing.
 
 	commandAPI.On("Output").Return(nil, errors.New("test error"))
 	execAPI.On("Command", mock.Anything, mock.Anything, mock.Anything).Return(commandAPI)
+	osioAPI.On("MustRemove", mock.Anything)
 
 	rawAPI := raw.New(osioAPI, execAPI)
 	result, testFailed, err := rawAPI.GetRawCoverageAnalysisForPackage("somepkg")
@@ -54,6 +56,7 @@ func Test_GetRawCoverageAnalysisForPackage_NoTestsForPackage_ReturnsEmptySlice(t
 	// that have no test files.
 	commandAPI.On("Output").Return([]byte("?"), nil)
 	execAPI.On("Command", mock.Anything, mock.Anything, mock.Anything).Return(commandAPI)
+	osioAPI.On("MustRemove", mock.Anything)
 
 	rawAPI := raw.New(osioAPI, execAPI)
 	result, testFailed, err := rawAPI.GetRawCoverageAnalysisForPackage("somepkg")
@@ -70,6 +73,7 @@ func Test_GetRawCoverageAnalysisForPackage_ErrorReadingTmpFile_ReturnsError(t *t
 	commandAPI.On("Output").Return([]byte("testresult"), nil)
 	execAPI.On("Command", mock.Anything, mock.Anything, mock.Anything).Return(commandAPI)
 	osioAPI.On("ReadFile", mock.Anything).Return(nil, errors.New("test error"))
+	osioAPI.On("MustRemove", mock.Anything)
 
 	rawAPI := raw.New(osioAPI, execAPI)
 	result, testFailed, err := rawAPI.GetRawCoverageAnalysisForPackage("somepkg")
@@ -89,6 +93,7 @@ func Test_GetRawCoverageAnalysisForPackage_Normally_OmitsModeLine(t *testing.T) 
 
 	profileData := "mode: count"
 	osioAPI.On("ReadFile", mock.Anything).Return([]byte(profileData), nil)
+	osioAPI.On("MustRemove", mock.Anything)
 
 	rawAPI := raw.New(osioAPI, execAPI)
 	result, testFailed, err := rawAPI.GetRawCoverageAnalysisForPackage("somepkg")
@@ -107,6 +112,7 @@ func Test_GetRawCoverageAnalysisForPackage_NoModeLine_ReturnsError(t *testing.T)
 
 	profileDataMissingExpectedModeHeader := "data\ndata"
 	osioAPI.On("ReadFile", mock.Anything).Return([]byte(profileDataMissingExpectedModeHeader), nil)
+	osioAPI.On("MustRemove", mock.Anything)
 
 	rawAPI := raw.New(osioAPI, execAPI)
 	result, testFailed, err := rawAPI.GetRawCoverageAnalysisForPackage("somepkg")
@@ -216,6 +222,7 @@ func Test_GetRawCoverageAnalysisForPackage_UnitTestFailureDetected_BehavesProper
 
 	profileData := "mode: count\ndata"
 	osioAPI.On("ReadFile", mock.Anything).Return([]byte(profileData), nil)
+	osioAPI.On("MustRemove", mock.Anything)
 
 	rawAPI := raw.New(osioAPI, execAPI)
 	result, testFailed, err := rawAPI.GetRawCoverageAnalysisForPackage("somepkg")

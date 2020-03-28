@@ -3,10 +3,21 @@ package host
 import (
 	"io/ioutil"
 	"os"
+
+	"github.com/eltorocorp/drygopher/drygopher/coverage/hostiface"
 )
 
 // OSIO is a wrapper around common OS and IO functions.
 type OSIO struct{}
+
+// MustRemove wrapper
+func (OSIO) MustRemove(filename string) {
+	err := os.Remove(filename)
+	if err == nil || err != nil && os.IsNotExist(err) {
+		return
+	}
+	panic("OSIO.MustRemove encountered an unanticipated error condition: " + err.Error())
+}
 
 // ReadFile wrapper
 func (OSIO) ReadFile(filename string) ([]byte, error) {
@@ -27,3 +38,5 @@ func (OSIO) ReadDir(dirname string) ([]os.FileInfo, error) {
 func (OSIO) LookupEnv(key string) (string, bool) {
 	return os.LookupEnv(key)
 }
+
+var _ hostiface.OSIOAPI = (*OSIO)(nil)

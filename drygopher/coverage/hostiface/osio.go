@@ -6,6 +6,7 @@ import "os"
 type OSIOAPI interface {
 	ReadFile(filename string) ([]byte, error)
 	WriteFile(filename string, data []byte, perm os.FileMode) error
+	MustRemove(filename string)
 	ReadDir(dirname string) ([]os.FileInfo, error)
 	LookupEnv(key string) (string, bool)
 }

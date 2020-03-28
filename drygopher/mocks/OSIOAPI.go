@@ -34,6 +34,11 @@ func (_m *OSIOAPI) LookupEnv(key string) (string, bool) {
 	return r0, r1
 }
 
+// MustRemove provides a mock function with given fields: filename
+func (_m *OSIOAPI) MustRemove(filename string) {
+	_m.Called(filename)
+}
+
 // ReadDir provides a mock function with given fields: dirname
 func (_m *OSIOAPI) ReadDir(dirname string) ([]os.FileInfo, error) {
 	ret := _m.Called(dirname)
