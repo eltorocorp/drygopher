@@ -20,7 +20,7 @@ func Test_GetPackages_Normally_ShellsCorrectListCommand(t *testing.T) {
 	expectedCommandArgs := []interface{}{
 		"sh",
 		"-c",
-		"go list ./... | grep -v /interfaces/ | grep -v /host/",
+		"go list -f '{{.Dir}}' ./... | grep -v /interfaces/ | grep -v /host/",
 	}
 	execAPI.On("Command", expectedCommandArgs...).Return(commandAPI)
 
@@ -43,7 +43,7 @@ func Test_GetPackages_ErrorFromShellOutput_ReturnsError(t *testing.T) {
 	expectedCommandArgs := []interface{}{
 		"sh",
 		"-c",
-		"go list ./...",
+		"go list -f '{{.Dir}}' ./...",
 	}
 	execAPI.On("Command", expectedCommandArgs...).Return(commandAPI)
 
@@ -62,7 +62,6 @@ func Test_GetFileNamesForPackage_Normally_ReturnsFileNamesWithoutError(t *testin
 	osioAPI := new(mocks.OSIOAPI)
 	execAPI := new(mocks.ExecAPI)
 
-	osioAPI.On("GetGoPath").Return("path")
 	fileInfo := new(mocks.FileInfo)
 	fileInfo.On("Name").Return("filename.go")
 	files := []os.FileInfo{
@@ -74,7 +73,7 @@ func Test_GetFileNamesForPackage_Normally_ReturnsFileNamesWithoutError(t *testin
 	packageAPI := packages.New(execAPI, osioAPI)
 	fileNames, err := packageAPI.GetFileNamesForPackage("packagename")
 
-	assert.Equal(t, []string{"path/src/packagename/filename.go"}, fileNames)
+	assert.Equal(t, []string{"packagename/filename.go"}, fileNames)
 	assert.NoError(t, err)
 }
 
@@ -82,7 +81,6 @@ func Test_GetFileNamesForPackages_ErrorReadingDirectory_ReturnsError(t *testing.
 	osioAPI := new(mocks.OSIOAPI)
 	execAPI := new(mocks.ExecAPI)
 
-	osioAPI.On("GetGoPath", mock.Anything).Return("path", true)
 	osioAPI.On("ReadDir", mock.Anything).Return(nil, errors.New("test error"))
 
 	packageAPI := packages.New(execAPI, osioAPI)

@@ -8,7 +8,6 @@ type OSIOAPI interface {
 	WriteFile(filename string, data []byte, perm os.FileMode) error
 	MustRemove(filename string)
 	ReadDir(dirname string) ([]os.FileInfo, error)
-	GetGoPath() string
 }
 
 // FileInfo is a wrapper around the os.FileInfo interface.

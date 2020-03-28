@@ -13,20 +13,6 @@ type OSIOAPI struct {
 	mock.Mock
 }
 
-// GetGoPath provides a mock function with given fields:
-func (_m *OSIOAPI) GetGoPath() string {
-	ret := _m.Called()
-
-	var r0 string
-	if rf, ok := ret.Get(0).(func() string); ok {
-		r0 = rf()
-	} else {
-		r0 = ret.Get(0).(string)
-	}
-
-	return r0
-}
-
 // MustRemove provides a mock function with given fields: filename
 func (_m *OSIOAPI) MustRemove(filename string) {
 	_m.Called(filename)

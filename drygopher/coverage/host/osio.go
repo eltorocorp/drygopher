@@ -1,7 +1,6 @@
 package host
 
 import (
-	"go/build"
 	"io/ioutil"
 	"os"
 
@@ -33,11 +32,6 @@ func (OSIO) WriteFile(filename string, data []byte, perm os.FileMode) error {
 // ReadDir wrapper
 func (OSIO) ReadDir(dirname string) ([]os.FileInfo, error) {
 	return ioutil.ReadDir(dirname)
-}
-
-//GetGoPath wrapper
-func (OSIO) GetGoPath() string {
-	return build.Default.GOPATH
 }
 
 var _ hostiface.OSIOAPI = (*OSIO)(nil)

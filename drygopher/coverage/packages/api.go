@@ -30,7 +30,7 @@ func (a *API) GetPackages(exclusionPatterns []string) (packages []string, err er
 	var (
 		out []byte
 	)
-	grepString := "go list ./..."
+	grepString := "go list -f '{{.Dir}}' ./..."
 	for _, exclusionPattern := range exclusionPatterns {
 		grepString += fmt.Sprintf(" | grep -v %v", exclusionPattern)
 	}
@@ -45,10 +45,8 @@ func (a *API) GetPackages(exclusionPatterns []string) (packages []string, err er
 }
 
 // GetFileNamesForPackage returns a list package URIs with associated filenames.
-func (a *API) GetFileNamesForPackage(pkg string) ([]string, error) {
-	gopath := a.osioAPI.GetGoPath()
-	packagePath := gopath + "/src/" + pkg
-	files, err := a.osioAPI.ReadDir(packagePath)
+func (a *API) GetFileNamesForPackage(pkgPath string) ([]string, error) {
+	files, err := a.osioAPI.ReadDir(pkgPath)
 	if err != nil {
 		return nil, err
 	}
@@ -56,7 +54,7 @@ func (a *API) GetFileNamesForPackage(pkg string) ([]string, error) {
 	for _, file := range files {
 		fileName := file.Name()
 		if filepath.Ext(fileName) == ".go" {
-			fullName := packagePath + "/" + fileName
+			fullName := pkgPath + "/" + fileName
 			fileNames = append(fileNames, fullName)
 		}
 	}
