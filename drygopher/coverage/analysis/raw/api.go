@@ -31,10 +31,16 @@ func New(osioAPI hostiface.OSIOAPI, execAPI hostiface.ExecAPI) *API {
 // - The raw coverage results for the package
 // - Whether or not the package's unit tests failed.
 // - An error, should one have occurred during processing.
-func (a *API) GetRawCoverageAnalysisForPackage(pkg string) ([]string, bool, error) {
+func (a *API) GetRawCoverageAnalysisForPackage(pkg string) (rawResult []string, testFailed bool, err error) {
 	defer func() {
+		if r := recover(); r != nil {
+			err = fmt.Errorf("an unhandled panic was encountered while executing a test against package '%v'", pkg)
+			testFailed = true
+			rawResult = []string{""}
+		}
 		a.osioAPI.MustRemove("tmp.out")
 	}()
+
 	covermode := "atomic"
 	// the use of -count=1 is important, as it prevents go test from attempting
 	// to use cached test results (which are not supported by drygopher)
@@ -42,7 +48,8 @@ func (a *API) GetRawCoverageAnalysisForPackage(pkg string) ([]string, bool, erro
 	analyzeCmdText = fmt.Sprintf(analyzeCmdText, covermode, pkg)
 	analyzeCoverageCmd := a.execAPI.Command("sh", "-c", analyzeCmdText)
 
-	resultBytes, err := analyzeCoverageCmd.Output()
+	var resultBytes []byte
+	resultBytes, err = analyzeCoverageCmd.Output()
 	result := string(resultBytes)
 
 	// analyzeCoverageCmd.Output() will return an error when a test fails.
@@ -50,8 +57,9 @@ func (a *API) GetRawCoverageAnalysisForPackage(pkg string) ([]string, bool, erro
 	// disregard the error and instead process the test failure.
 	if strings.Contains(result, "FAIL:") {
 		log.Printf("---> Failed test: %v\n", result)
-		rawResult, err := a.retrieveResultsFromTmpFile(result)
-		return rawResult, true, err
+		rawResult, err = a.retrieveResultsFromTmpFile(result)
+		testFailed = true
+		return
 	}
 
 	// If we're here, and there is an error, we know the error didn't result from
@@ -61,7 +69,7 @@ func (a *API) GetRawCoverageAnalysisForPackage(pkg string) ([]string, bool, erro
 	}
 
 	log.Printf("---> Package result: %v", string(result))
-	rawResult, err := a.retrieveResultsFromTmpFile(result)
+	rawResult, err = a.retrieveResultsFromTmpFile(result)
 	return rawResult, false, err
 }
 

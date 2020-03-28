@@ -2,6 +2,7 @@ package raw_test
 
 import (
 	"errors"
+	"fmt"
 	"testing"
 
 	"github.com/eltorocorp/drygopher/drygopher/coverage/analysis/raw"
@@ -231,4 +232,25 @@ func Test_GetRawCoverageAnalysisForPackage_UnitTestFailureDetected_BehavesProper
 	assert.True(t, testFailed)
 	assert.NoError(t, err)
 	assert.Equal(t, []string{"data"}, result)
+}
+
+func Test_GetRawCoverageAnalysisForPackage_UnitTestPanics_RecoversGracefully(t *testing.T) {
+	const somePackageName = "somepkg"
+
+	osioAPI := new(mocks.OSIOAPI)
+	execAPI := new(mocks.ExecAPI)
+
+	osioAPI.On("MustRemove", mock.Anything)
+	execAPI.On("Command", mock.Anything, mock.Anything, mock.Anything).Run(
+		func(args mock.Arguments) {
+			panic("simulating unhandled panic from go test")
+		},
+	)
+
+	rawAPI := raw.New(osioAPI, execAPI)
+	result, testFailed, err := rawAPI.GetRawCoverageAnalysisForPackage(somePackageName)
+
+	assert.True(t, testFailed)
+	assert.EqualError(t, err, fmt.Sprintf("an unhandled panic was encountered while executing a test against package '%v'", somePackageName))
+	assert.Equal(t, []string{""}, result)
 }
